@@ -2,12 +2,14 @@ package gioco_scopa_web.model;
 
 import gioco_scopa_web.model.Procedure_di_gioco.Stato_nodo.Azione_valore;
 
+
 //import java.io.PrintWriter;
 import java.util.ArrayList;
 //import java.util.Collection;
 import java.util.HashMap;
 import java.util.Random;
 //import java.util.Set;
+
 
 import org.json.*;
 
@@ -25,7 +27,19 @@ public class Procedure_di_gioco {
 	// mazzo stay to the deck of cards in a specif game
 	private ArrayList<Carta> mazzo=new ArrayList<Carta>();
 	
-	private Procedure_di_gioco(){}
+	private Integer numero_set_giocati=0;
+	private Integer numero_set_vinti_computer=0;
+	private Integer numero_set_vinti_player=0;
+	
+	private boolean new_inizio=true;
+	
+	private HashMap<Integer,Carta> carte_tavolo_gioco=null;
+	private ArrayList<Carta> carte_computer_mano_partita=new ArrayList<Carta>();
+	private ArrayList<Carta> carte_player_mano_partita=new ArrayList<Carta>();
+	
+	private Procedure_di_gioco(){
+		inizializza_carte();
+	}
 	
 	/*
 	public static void main(String[] args){
@@ -88,6 +102,7 @@ public class Procedure_di_gioco {
 	public static Procedure_di_gioco getInstance(){
 		if (procedure_gioco==null){
 			procedure_gioco=new Procedure_di_gioco();
+			Singleton_gioco.getInstance().set_just_once(true);
 		}
 		return procedure_gioco;
 	}
@@ -194,16 +209,25 @@ public class Procedure_di_gioco {
 		return return_obj;
 	}
 	
-	private Carta alfa_beta_search(Stato_nodo stato){
+	public boolean new_match_is_available(){
+		return new_inizio;
+	}
+	
+	public void set_new_match_available(boolean match){
+		new_inizio=match;
+	}
+	
+	public Carta alfa_beta_search(Stato_nodo stato){
 		Carta returnAzione=null;
 		Alfa_beta_nodo padre=new Alfa_beta_nodo(null);
-		Integer azioneValore=Procedure_di_gioco.getInstance().max_value(stato,Integer.MIN_VALUE,Integer.MAX_VALUE,padre);
-		JSONObject obj=Procedure_di_gioco.getInstance().to_JSon(padre);
+		Integer azioneValore=/*Procedure_di_gioco.getInstance().*/max_value(stato,Integer.MIN_VALUE,Integer.MAX_VALUE,padre);
+		JSONObject obj=/*Procedure_di_gioco.getInstance().*/to_JSon(padre);
 		String string_json=JSon_to_string_albero(obj);
 		
-		File outputFile = new File("WebContent/data/albero.txt"); 
-		try { 
-			FileWriter fw = new FileWriter(outputFile.getAbsoluteFile()); 
+		File outputFile = new File("/home/marcobaesso/Eclipse_Workspace/gioco_scopa_web/WebContent/data/albero.txt"); 
+		try {
+			FileWriter fw = new FileWriter(outputFile.getAbsolutePath()); 
+			outputFile.getPath();
 			BufferedWriter bw = new BufferedWriter(fw); 
 			bw.write(string_json);  
 			bw.close(); 
@@ -292,6 +316,10 @@ public class Procedure_di_gioco {
 			return v;
 		}
 	}
+
+	public void pesca_carte_tavolo_gioco(){
+		carte_tavolo_gioco=pesca_carte_tavolo();
+	}
 	
 	// the cards that must put on the table must to be different
 	// on numbers, to semplify the play
@@ -320,8 +348,15 @@ public class Procedure_di_gioco {
 		return cards;
 	}
 	
+	public void distribuisci_carte_mano_gioco(boolean begin_from_computer){
+		carte_computer_mano_partita.clear();
+		carte_player_mano_partita.clear();		
+		distribuisci_carte(begin_from_computer,carte_computer_mano_partita,carte_player_mano_partita);
+	}
+	
 	// begin_from_computer=true if cards are distributed from computer
 	// to the player, false otherwise
+	// true means that computer starts
 	private void distribuisci_carte(boolean begin_from_computer,ArrayList<Carta> computer,ArrayList<Carta> player){
 		ArrayList<Carta> first=null;
 		ArrayList<Carta> second=null;
@@ -431,7 +466,7 @@ public class Procedure_di_gioco {
 	// first_time suggests you from which deck you have to mix up the cards
 	private Carta ottieni_carta_mazzo(boolean first_time,int index){
 		if (first_time)
-			return Procedure_di_gioco.getInstance().get_carta(index);
+			return /*Procedure_di_gioco.getInstance().*/get_carta(index);
 		else
 			return mazzo.get(index);
 	}
@@ -480,6 +515,28 @@ public class Procedure_di_gioco {
 			carte.add(new Carta(Seme.BASTONI,9));
 			carte.add(new Carta(Seme.BASTONI,10));	
 		}
+	}
+	
+	public String get_string_seme(Seme seme){
+		switch (seme){
+		case DENARI: return "DENARI";
+		case COPPE: return "COPPE";
+		case SPADE: return "SPADE"; 
+		case BASTONI: return "BASTONI";
+		default: return null;
+		}
+	}
+	
+	public HashMap<Integer,Carta> get_carte_tavolo_gioco() {
+		return carte_tavolo_gioco;
+	}
+
+	public ArrayList<Carta> get_carte_computer_mano_partita(){
+		return carte_computer_mano_partita;
+	}
+	
+	public ArrayList<Carta> get_carte_player_mano_partita(){
+		return carte_player_mano_partita;
 	}
 	
 	public static class Alfa_beta_nodo{
