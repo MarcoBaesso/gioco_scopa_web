@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <script> 
+  append = function(text){
+    document.getElementById("eventi_websocket").insertAdjacentHTML('beforeend', 
+    "<li>" + text + ";</li>"
+  );
+  } 
+  window.onload = function(){
+    var echo_service = new WebSocket('ws://localhost:9999/gioco_scopa_web/gioco'); 
+    echo_service.onmessage = function(event){
+      append("messaggio ricevuto") 
+      alert(event.data); 
+      echo_service.close();
+    } 
+    echo_service.onopen = function(){
+      append("connessione effettuata") 
+      echo_service.send("hello!");
+    } 
+    echo_service.onclose = function(){
+      append("connessione chiusa");
+    } 
+    echo_service.onerror = function(){
+      append("errore nella connessione");
+    }
+  }
+  </script> 
+</head>
+<body> 
+  <ul id="eventi_websocket"> 
+  </ul>
+</body> 
+</html>
