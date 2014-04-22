@@ -315,7 +315,7 @@ public class Procedure_di_gioco {
 	
 	if (carte_tavolo_gioco.size()==carte_prese.size()){ // scopa
 		if (azione.get_valore()==1 && carte_tavolo_gioco.size()==1
-				&& carte_tavolo_gioco.get(0).get_valore()==1) // se tira un asso è scopa solo
+				&& carte_tavolo_gioco.get(1)!=null) // se tira un asso è scopa solo
 													   // se in tavolo c'è un asso
 			switch (turno){
 			case MAX: num_scope_computer_totale++; break;
@@ -1001,7 +1001,7 @@ public class Procedure_di_gioco {
 			
 			if (carteTavolo.size()==carte_prese.size()){ // scopa
 				if (azione.get_valore()==1 && carteTavolo.size()==1
-						&& carteTavolo.get(0).get_valore()==1) // se tira un asso è scopa solo
+						&& carteTavolo.get(1)!=null) // se tira un asso è scopa solo
 															   // se in tavolo c'è un asso
 					punteggio = punteggio + 84;
 			}
