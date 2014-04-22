@@ -25,7 +25,8 @@ public class Web_socket extends MessageInbound{
 	private String name;
 	private WsOutbound myoutbound;
 	private Procedure_di_gioco gioco;
- 
+	private JSONObject json_obj_buffer=new JSONObject();
+	
 	public Web_socket(HttpServletRequest httpServletRequest) {}
 
 	@Override
@@ -111,11 +112,13 @@ public class Web_socket extends MessageInbound{
 
 	JSONObject json_obj=new JSONObject();	
 	String message=inChar.toString();
+	
 	int type_message=0;
-	int m1=message.indexOf("newpartita"); //1
-	int m2=message.indexOf("mossa_computer"); //2
-	int m3=message.indexOf("mossa_player"); //3
-	int m4=message.indexOf("newset"); //4
+	int m1=message.indexOf("1newpartita"); //1
+	int m2=message.indexOf("2mossa_computer"); //2
+	int m3=message.indexOf("3aggiorna_mossa_computer"); //3
+	int m4=message.indexOf("4mossa_player"); //4
+	int m5=message.indexOf("5newset"); //5
 	if (m1!=-1){
 		type_message=1;
 	}else{
@@ -127,6 +130,10 @@ public class Web_socket extends MessageInbound{
 			}else{
 				if (m4!=-1){
 					type_message=4;
+				}else{
+					if (m5!=-1){
+						type_message=5;
+					}
 				}
 			}			
 		}
@@ -161,10 +168,9 @@ public class Web_socket extends MessageInbound{
 					}
 				}
 				
-				json_obj.put("type","newpartita");
+				json_obj.put("type","1newpartita");
 				json_obj.put("tavolo",json_obj_carte_tavolo);
 				json_obj.put("player",json_obj_carte_player);
-				//json_obj.put("mossa",carta_json);
 				
 				CharBuffer outbuffer = CharBuffer.wrap(json_obj.toString());
 				this.myoutbound.writeTextMessage(outbuffer);
@@ -180,19 +186,64 @@ public class Web_socket extends MessageInbound{
 			}
 			break;
 		case 2:
+			
+			gioco.attendi(5000);
+			
 			Procedure_di_gioco.Stato_nodo stato=gioco.next_state();
 			
 			Carta carta_IA_computer=gioco.alfa_beta_search(stato);
 			
-			String carta_json=String.valueOf(carta_IA_computer.get_valore());
-			carta_json=carta_json.concat("_" + gioco.get_string_seme(carta_IA_computer.get_seme()));
+			String cartajson=String.valueOf(carta_IA_computer.get_valore());
+			cartajson=cartajson.concat("_" + gioco.get_string_seme(carta_IA_computer.get_seme()));
 			
 			gioco.aggiorna_stato_gioco(Procedure_di_gioco.Stato_nodo.Turno.MAX,carta_IA_computer);
 			
+			JSONArray json_obj_carte_tavolo=new JSONArray();
+			for (int i=0;i<10;i++){
+				Carta carta=gioco.get_carte_tavolo_gioco().get(i+1);
+				if (carta!=null){
+					String carta_json=String.valueOf(carta.get_valore());
+					carta_json=carta_json.concat("_" + gioco.get_string_seme(carta.get_seme()));
+					json_obj_carte_tavolo.put(carta_json);						
+				}
+			}
+			
+			try{
+			json_obj.put("type","2mossa_computer");
+			json_obj.put("carta_computer",cartajson);
+
+			json_obj_buffer.put("type","3aggiorna_mossa_computer");
+			json_obj_buffer.put("tavolo",json_obj_carte_tavolo);
+			json_obj_buffer.put("carte_computer", gioco.get_num_carte_computer_partita());
+			json_obj_buffer.put("carte_player", gioco.get_num_carte_player_partita());
+			json_obj_buffer.put("denari_computer", gioco.get_num_denari_computer_partita());
+			json_obj_buffer.put("denari_player", gioco.get_num_denari_player_partita());
+			json_obj_buffer.put("primiera_computer", gioco.get_num_7_computer_partita());
+			json_obj_buffer.put("primiera_player", gioco.get_num_7_player_partita());
+			json_obj_buffer.put("sette_bello_computer", gioco.get_sette_bello_computer_partita());
+			json_obj_buffer.put("sette_bello_player", gioco.get_sette_bello_player_partita());
+			json_obj_buffer.put("re_bello_computer", gioco.get_re_bello_computer_partita());
+			json_obj_buffer.put("re_bello_player", gioco.get_re_bello_player_partita());
+			
+			CharBuffer outbuffer = CharBuffer.wrap(json_obj.toString());
+			this.myoutbound.writeTextMessage(outbuffer);
+			
+			}
+			catch (JSONException e) {
+				e.printStackTrace();
+			}
 			break;
 		case 3:
+			
+			gioco.attendi(3500);
+			
+			CharBuffer outbuffer = CharBuffer.wrap(json_obj_buffer.toString());
+			this.myoutbound.writeTextMessage(outbuffer);
+			json_obj_buffer=new JSONObject();
 			break;
 		case 4:
+			break;
+		case 5:
 			break;
 	}
 

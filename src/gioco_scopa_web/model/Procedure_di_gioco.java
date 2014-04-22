@@ -4,12 +4,16 @@ import gioco_scopa_web.model.Procedure_di_gioco.Stato_nodo.Azione_valore;
 
 
 
+
+
 //import java.io.PrintWriter;
 import java.util.ArrayList;
 //import java.util.Collection;
 import java.util.HashMap;
 import java.util.Random;
 //import java.util.Set;
+
+
 
 
 
@@ -688,6 +692,20 @@ public class Procedure_di_gioco {
 		case BASTONI: return "BASTONI";
 		default: return null;
 		}
+	}
+	
+	public void attendi(long time){
+		
+	
+		try {
+			synchronized(this){
+				wait(time);
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 	
 	public HashMap<Integer,Carta> get_carte_tavolo_gioco() {

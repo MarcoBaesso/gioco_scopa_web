@@ -119,7 +119,7 @@ $(function(){
 					j++;	
 				}
 				if (segnale){
-					card.animate({x:900,y:50},2500,"linear");				
+					card.animate({x:900,y:327},2000,"linear");				
 				}
 				i++;			
 			}

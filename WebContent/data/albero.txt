@@ -1,158 +1,284 @@
-{"carta":{},"carte_prese":[],"minimax":-10,
+{"carta":{},"carte_prese":[],"minimax":-74,
 "figli":[
-        {"carta":{"valore":6,"seme":"COPPE"},"carte_prese":[],"minimax":-112,
+        {"carta":{"valore":4,"seme":"BASTONI"},"carte_prese":[],"minimax":-78,
         "figli":[
-                {"carta":{"valore":4,"seme":"SPADE"},"carte_prese":[],"minimax":-112,
+                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-74,
                 "figli":[
-                        {"carta":{"valore":3,"seme":"DENARI"},"carte_prese":[],"minimax":-112,
+                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-140,
                         "figli":[
-                                {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-112,
+                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[6,2],"minimax":-136,
                                 "figli":[
-                                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":-112,
+                                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-136,
                                         "figli":[
-                                                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[4,3],"minimax":-112,
+                                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-136,
                                                 "figli":[]}]}]},
-                                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[4,3],"minimax":-112,
+                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[5,2,1],"minimax":-140,
                                 "figli":[
-                                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":-112,
+                                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-140,
                                         "figli":[
-                                                {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-112,
+                                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-140,
+                                                "figli":[]}]}]},
+                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-74,
+                                "figli":[
+                                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-74,
+                                        "figli":[
+                                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":-74,
                                                 "figli":[]}]}]}]},
-                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":-112,
+                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-74,
                         "figli":[
-                                {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-112,
+                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":-74,
                                 "figli":[
-                                        {"carta":{"valore":3,"seme":"DENARI"},"carte_prese":[],"minimax":-112,
+                                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-74,
                                         "figli":[
-                                                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[4,3],"minimax":-112,
+                                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-74,
                                                 "figli":[]}]}]},
-                                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[],"minimax":false,
-                                "figli":[]}]}]},
-                {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
+                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":32,
+                                "figli":[
+                                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":32,
+                                        "figli":[
+                                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":32,
+                                                "figli":[]}]}]}]}]},
+                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[6,2],"minimax":-10,
                 "figli":[
-                        {"carta":{"valore":3,"seme":"DENARI"},"carte_prese":[],"minimax":-10,
+                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[5,4,1],"minimax":-10,
                         "figli":[
-                                {"carta":{"valore":4,"seme":"SPADE"},"carte_prese":[3],"minimax":-10,
+                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-10,
                                 "figli":[
-                                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
+                                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-10,
                                         "figli":[
-                                                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[],"minimax":-10,
+                                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-10,
                                                 "figli":[]}]}]},
-                                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[],"minimax":-10,
+                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-10,
                                 "figli":[
-                                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
+                                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-10,
                                         "figli":[
-                                                {"carta":{"valore":4,"seme":"SPADE"},"carte_prese":[3],"minimax":-10,
+                                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-10,
                                                 "figli":[]}]}]}]},
-                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":false,
+                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":false,
                         "figli":[]}]},
-                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[],"minimax":-10,
+                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[5,2,1],"minimax":-18,
                 "figli":[
-                        {"carta":{"valore":3,"seme":"DENARI"},"carte_prese":[],"minimax":-10,
+                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[6,4],"minimax":-18,
                         "figli":[
-                                {"carta":{"valore":4,"seme":"SPADE"},"carte_prese":[3],"minimax":-10,
+                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-18,
                                 "figli":[
-                                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
+                                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-18,
                                         "figli":[
-                                                {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
+                                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-18,
                                                 "figli":[]}]}]},
-                                {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
+                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-18,
                                 "figli":[
-                                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
+                                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-18,
                                         "figli":[
-                                                {"carta":{"valore":4,"seme":"SPADE"},"carte_prese":[3],"minimax":-10,
+                                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-18,
                                                 "figli":[]}]}]}]},
-                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":false,
-                        "figli":[]}]}]},
-        {"carta":{"valore":3,"seme":"DENARI"},"carte_prese":[],"minimax":-10,
-        "figli":[
-                {"carta":{"valore":4,"seme":"SPADE"},"carte_prese":[3],"minimax":-10,
-                "figli":[
-                        {"carta":{"valore":6,"seme":"COPPE"},"carte_prese":[],"minimax":-10,
-                        "figli":[
-                                {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
-                                "figli":[
-                                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
-                                        "figli":[
-                                                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[],"minimax":-10,
-                                                "figli":[]}]}]},
-                                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[],"minimax":-10,
-                                "figli":[
-                                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
-                                        "figli":[
-                                                {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
-                                                "figli":[]}]}]}]},
-                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
-                        "figli":[
-                                {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
-                                "figli":[
-                                        {"carta":{"valore":6,"seme":"COPPE"},"carte_prese":[],"minimax":-10,
-                                        "figli":[
-                                                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[],"minimax":-10,
-                                                "figli":[]}]}]},
-                                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[],"minimax":false,
-                                "figli":[]}]}]},
-                {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
-                "figli":[
-                        {"carta":{"valore":6,"seme":"COPPE"},"carte_prese":[],"minimax":-10,
-                        "figli":[
-                                {"carta":{"valore":4,"seme":"SPADE"},"carte_prese":[3],"minimax":-10,
-                                "figli":[
-                                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
-                                        "figli":[
-                                                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[],"minimax":-10,
-                                                "figli":[]}]}]},
-                                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[],"minimax":-10,
-                                "figli":[
-                                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
-                                        "figli":[
-                                                {"carta":{"valore":4,"seme":"SPADE"},"carte_prese":[3],"minimax":-10,
-                                                "figli":[]}]}]}]},
-                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":false,
+                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":false,
                         "figli":[]}]},
-                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[],"minimax":-10,
+                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[6,4],"minimax":-74,
                 "figli":[
-                        {"carta":{"valore":6,"seme":"COPPE"},"carte_prese":[],"minimax":-10,
+                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-140,
                         "figli":[
-                                {"carta":{"valore":4,"seme":"SPADE"},"carte_prese":[3],"minimax":-10,
+                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-74,
                                 "figli":[
-                                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
+                                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-74,
                                         "figli":[
-                                                {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
+                                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":-74,
                                                 "figli":[]}]}]},
-                                {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
+                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[5,2,1],"minimax":-140,
                                 "figli":[
-                                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":-10,
+                                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-140,
                                         "figli":[
-                                                {"carta":{"valore":4,"seme":"SPADE"},"carte_prese":[3],"minimax":-10,
+                                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-140,
                                                 "figli":[]}]}]}]},
-                        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":false,
-                        "figli":[]}]}]},
-        {"carta":{"valore":9,"seme":"BASTONI"},"carte_prese":[],"minimax":-112,
-        "figli":[
-                {"carta":{"valore":4,"seme":"SPADE"},"carte_prese":[],"minimax":-112,
-                "figli":[
-                        {"carta":{"valore":6,"seme":"COPPE"},"carte_prese":[],"minimax":-112,
+                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-74,
                         "figli":[
-                                {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-112,
+                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-58,
                                 "figli":[
-                                        {"carta":{"valore":3,"seme":"DENARI"},"carte_prese":[],"minimax":-112,
+                                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[5,4,1],"minimax":-58,
                                         "figli":[
-                                                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[4,3],"minimax":-112,
+                                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":-58,
                                                 "figli":[]}]}]},
-                                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[],"minimax":false,
+                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":-74,
+                                "figli":[
+                                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-74,
+                                        "figli":[
+                                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-74,
+                                                "figli":[]}]}]}]}]},
+                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[5,4,1],"minimax":-78,
+                "figli":[
+                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-140,
+                        "figli":[
+                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-78,
+                                "figli":[
+                                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-78,
+                                        "figli":[
+                                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":-78,
+                                                "figli":[]}]}]},
+                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[6,2],"minimax":-140,
+                                "figli":[
+                                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-140,
+                                        "figli":[
+                                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-140,
+                                                "figli":[]}]}]}]},
+                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-78,
+                        "figli":[
+                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-66,
+                                "figli":[
+                                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[6,4],"minimax":-66,
+                                        "figli":[
+                                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":-66,
+                                                "figli":[]}]}]},
+                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":-78,
+                                "figli":[
+                                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-78,
+                                        "figli":[
+                                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-78,
+                                                "figli":[]}]}]}]}]}]},
+        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-120,
+        "figli":[
+                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-58,
+                "figli":[
+                        {"carta":{"valore":4,"seme":"BASTONI"},"carte_prese":[],"minimax":-120,
+                        "figli":[
+                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[6,2],"minimax":-120,
+                                "figli":[
+                                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-120,
+                                        "figli":[
+                                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-120,
+                                                "figli":[]}]}]},
+                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[5,2,1],"minimax":false,
+                                "figli":[]},
+                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":false,
                                 "figli":[]}]},
-                        {"carta":{"valore":3,"seme":"DENARI"},"carte_prese":[],"minimax":-112,
+                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-58,
                         "figli":[
-                                {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-112,
+                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":-58,
                                 "figli":[
-                                        {"carta":{"valore":6,"seme":"COPPE"},"carte_prese":[],"minimax":-112,
+                                        {"carta":{"valore":4,"seme":"BASTONI"},"carte_prese":[],"minimax":-58,
                                         "figli":[
-                                                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[4,3],"minimax":-112,
+                                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-58,
                                                 "figli":[]}]}]},
-                                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[4,3],"minimax":false,
+                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-58,
+                                "figli":[
+                                        {"carta":{"valore":4,"seme":"BASTONI"},"carte_prese":[],"minimax":-58,
+                                        "figli":[
+                                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":-58,
+                                                "figli":[]}]}]}]}]},
+                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[6,2],"minimax":-120,
+                "figli":[
+                        {"carta":{"valore":4,"seme":"BASTONI"},"carte_prese":[],"minimax":-136,
+                        "figli":[
+                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-136,
+                                "figli":[
+                                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-136,
+                                        "figli":[
+                                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-136,
+                                                "figli":[]}]}]},
+                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":false,
+                                "figli":[]}]},
+                        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-120,
+                        "figli":[
+                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-120,
+                                "figli":[
+                                        {"carta":{"valore":4,"seme":"BASTONI"},"carte_prese":[],"minimax":-120,
+                                        "figli":[
+                                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-120,
+                                                "figli":[]}]}]},
+                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":false,
                                 "figli":[]}]}]},
-                {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":false,
+                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[5,2,1],"minimax":false,
                 "figli":[]},
-                {"carta":{"valore":7,"seme":"DENARI"},"carte_prese":[],"minimax":false,
-                "figli":[]}]}]}
+                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":false,
+                "figli":[]}]},
+        {"carta":{"valore":2,"seme":"DENARI"},"carte_prese":[],"minimax":-74,
+        "figli":[
+                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-58,
+                "figli":[
+                        {"carta":{"valore":4,"seme":"BASTONI"},"carte_prese":[],"minimax":-58,
+                        "figli":[
+                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":-58,
+                                "figli":[
+                                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-58,
+                                        "figli":[
+                                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-58,
+                                                "figli":[]}]}]},
+                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":48,
+                                "figli":[
+                                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":48,
+                                        "figli":[
+                                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":48,
+                                                "figli":[]}]}]}]},
+                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[6,4],"minimax":-66,
+                        "figli":[
+                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":-66,
+                                "figli":[
+                                        {"carta":{"valore":4,"seme":"BASTONI"},"carte_prese":[],"minimax":-66,
+                                        "figli":[
+                                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[5,4,1],"minimax":-66,
+                                                "figli":[]}]}]},
+                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":false,
+                                "figli":[]}]},
+                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[5,4,1],"minimax":-58,
+                        "figli":[
+                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":-58,
+                                "figli":[
+                                        {"carta":{"valore":4,"seme":"BASTONI"},"carte_prese":[],"minimax":-58,
+                                        "figli":[
+                                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[6,4],"minimax":-58,
+                                                "figli":[]}]}]},
+                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":false,
+                                "figli":[]}]}]},
+                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":-74,
+                "figli":[
+                        {"carta":{"valore":4,"seme":"BASTONI"},"carte_prese":[],"minimax":-78,
+                        "figli":[
+                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-74,
+                                "figli":[
+                                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-74,
+                                        "figli":[
+                                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-74,
+                                                "figli":[]}]}]},
+                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[6,4],"minimax":-74,
+                                "figli":[
+                                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-74,
+                                        "figli":[
+                                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-74,
+                                                "figli":[]}]}]},
+                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[5,4,1],"minimax":-78,
+                                "figli":[
+                                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-78,
+                                        "figli":[
+                                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-78,
+                                                "figli":[]}]}]}]},
+                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":-74,
+                        "figli":[
+                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-58,
+                                "figli":[
+                                        {"carta":{"valore":4,"seme":"BASTONI"},"carte_prese":[],"minimax":-58,
+                                        "figli":[
+                                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-58,
+                                                "figli":[]}]}]},
+                                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":-74,
+                                "figli":[
+                                        {"carta":{"valore":4,"seme":"BASTONI"},"carte_prese":[],"minimax":-74,
+                                        "figli":[
+                                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":-74,
+                                                "figli":[]}]}]}]}]},
+                {"carta":{"valore":10,"seme":"DENARI"},"carte_prese":[],"minimax":32,
+                "figli":[
+                        {"carta":{"valore":4,"seme":"BASTONI"},"carte_prese":[],"minimax":32,
+                        "figli":[
+                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":32,
+                                "figli":[
+                                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":32,
+                                        "figli":[
+                                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":32,
+                                                "figli":[]}]}]},
+                                {"carta":{"valore":8,"seme":"DENARI"},"carte_prese":[],"minimax":32,
+                                "figli":[
+                                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":32,
+                                        "figli":[
+                                                {"carta":{"valore":4,"seme":"COPPE"},"carte_prese":[],"minimax":32,
+                                                "figli":[]}]}]}]},
+                        {"carta":{"valore":10,"seme":"BASTONI"},"carte_prese":[],"minimax":false,
+                        "figli":[]}]}]}]}
