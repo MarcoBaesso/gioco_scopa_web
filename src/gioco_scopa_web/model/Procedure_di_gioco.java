@@ -3,12 +3,14 @@ package gioco_scopa_web.model;
 import gioco_scopa_web.model.Procedure_di_gioco.Stato_nodo.Azione_valore;
 
 
+
 //import java.io.PrintWriter;
 import java.util.ArrayList;
 //import java.util.Collection;
 import java.util.HashMap;
 import java.util.Random;
 //import java.util.Set;
+
 
 
 import org.json.*;
@@ -33,9 +35,26 @@ public class Procedure_di_gioco {
 	
 	private boolean new_inizio=true;
 	
+	// stato carte
 	private HashMap<Integer,Carta> carte_tavolo_gioco=null;
 	private ArrayList<Carta> carte_computer_mano_partita=new ArrayList<Carta>();
 	private ArrayList<Carta> carte_player_mano_partita=new ArrayList<Carta>();
+	
+	// stato punteggio 
+	private Integer num_carte_player_totale=0;
+	private Integer num_carte_computer_totale=0;
+	private Integer num_denari_player_totale=0;
+	private Integer num_denari_computer_totale=0;
+	private Integer num_7_player_totale=0;
+	private Integer num_7_computer_totale=0;
+	private boolean re_bello_player_totale=false;
+	private boolean re_bello_computer_totale=false;
+	private boolean sette_bello_player_totale=false;
+	private boolean sette_bello_computer_totale=false;
+	private Integer num_scope_player_totale=0;
+	private Integer num_scope_computer_totale=0;
+	
+	private Stato_nodo state=null;
 	
 	private Procedure_di_gioco(){
 		inizializza_carte();
@@ -209,12 +228,164 @@ public class Procedure_di_gioco {
 		return return_obj;
 	}
 	
+	public void aggiorna_stato_gioco(Stato_nodo.Turno turno,Carta carta){
+		ArrayList<Carta> mano=null;
+		
+		switch (turno){
+		case MAX: mano=carte_computer_mano_partita; break;
+		case MIN: mano=carte_player_mano_partita; break;
+		default: return;
+		}
+		
+		Carta azione=carta;
+		if (carte_tavolo_gioco.get(azione.get_valore())!=null){
+			HashMap<Integer,Carta> carte_prese=new HashMap<Integer,Carta>();
+			carte_prese.put(azione.get_valore(),azione);
+			aggiorna_punteggio_partita(turno,azione,carte_prese);	
+					
+			carte_tavolo_gioco.remove(azione.get_valore());
+					
+			for(int h=0;h<mano.size();h++){
+				Carta card=mano.get(h);
+				if (azione.get_valore().equals(card.get_valore()) && azione.get_seme().equals(card.get_seme()))
+					mano.remove(h);
+			}
+		}
+		else{
+			// check if the action (the card) is an ace, on the table there is no ace
+			// because of the control is in the else branch
+			if (azione.get_valore()==1){
+				HashMap<Integer,Carta> carte_prese=
+					(HashMap<Integer,Carta>) new HashMap<Integer,Carta>(carte_tavolo_gioco); // add all the card on the table
+
+				aggiorna_punteggio_partita(turno,azione,carte_prese);
+						
+				carte_tavolo_gioco.clear();
+				for(int h=0;h<mano.size();h++){
+					Carta card=mano.get(h);
+					if (azione.get_valore().equals(card.get_valore()) && azione.get_seme().equals(card.get_seme()))
+						mano.remove(h);
+				}
+			}
+			else{ // add all the composition of the cards
+				ArrayList<ArrayList<Integer>> lista_combinazioni=Stato_nodo.
+						sottoCombinazioni.get(azione.get_valore());
+				boolean check=false;
+				for(int j=0;j<lista_combinazioni.size();j++){
+					ArrayList<Integer> combinazione=lista_combinazioni.get(j); 
+					Boolean segnale=true;
+					for (int z=0;z<combinazione.size() && segnale;z++){
+						if (carte_tavolo_gioco.get(combinazione.get(z))==null){
+							segnale=false;
+						}
+					}
+					if (segnale){
+						check=true; // there is at least one composition of cards
+						HashMap<Integer,Carta> carte_prese=new HashMap<Integer,Carta>();
+								
+						for (int z=0;z<combinazione.size();z++){
+							carte_prese.put(combinazione.get(z), carte_tavolo_gioco.get(combinazione.get(z)));
+							carte_tavolo_gioco.remove(combinazione.get(z));
+						}
+								
+						aggiorna_punteggio_partita(turno,azione,carte_prese);
+										
+						for(int h=0;h<mano.size();h++){
+							Carta card=mano.get(h);
+							if (azione.get_valore().equals(card.get_valore()) && azione.get_seme().equals(card.get_seme()))
+								mano.remove(h);
+						}
+					}
+				} // end for
+				if (!check){ // there isn't any composition
+					carte_tavolo_gioco.put(azione.get_valore(),azione);
+							
+					for(int h=0;h<mano.size();h++){
+						Carta card=mano.get(h);
+						if (azione.get_valore().equals(card.get_valore()) && azione.get_seme().equals(card.get_seme()))
+							mano.remove(h);
+					}
+				}
+			}
+		}
+	}
+	
+	public void aggiorna_punteggio_partita(Stato_nodo.Turno turno, Carta azione,
+			HashMap<Integer,Carta> carte_prese){
+	
+	if (carte_tavolo_gioco.size()==carte_prese.size()){ // scopa
+		if (azione.get_valore()==1 && carte_tavolo_gioco.size()==1
+				&& carte_tavolo_gioco.get(0).get_valore()==1) // se tira un asso è scopa solo
+													   // se in tavolo c'è un asso
+			switch (turno){
+			case MAX: num_scope_computer_totale++; break;
+			case MIN: num_scope_player_totale++; break;
+			default: 
+			}
+	}
+	
+	Carta presa=azione;
+	
+	for (int i=0;i<10;i++){
+		if (presa!=null){
+			switch (turno){
+			case MAX: num_carte_computer_totale++; break;
+			case MIN: num_carte_player_totale++; break;
+			default: 
+			}
+			if (presa.get_seme()==Seme.DENARI){
+				switch (turno){
+				case MAX: num_denari_computer_totale++; break;
+				case MIN: num_denari_player_totale++; break;
+				default: 
+				}
+				if (presa.get_valore()==10){ // REbello
+					switch (turno){
+					case MAX: re_bello_computer_totale=true; break;
+					case MIN: re_bello_player_totale=true; break;
+					default: 
+					}
+				}
+				if (presa.get_valore()==7){ // 7bello
+					switch (turno){
+					case MAX: sette_bello_computer_totale=true; break;
+					case MIN: sette_bello_player_totale=true; break;
+					default: 
+					}	
+				}
+			}
+			if (presa.get_valore()==7){	// primiera
+				switch (turno){
+				case MAX: num_7_computer_totale++; break;
+				case MIN: num_7_player_totale++; break;
+				default: 
+				}	
+			}
+		}
+		presa=carte_prese.get(i+1);
+	}
+	}
+	
 	public boolean new_match_is_available(){
 		return new_inizio;
 	}
 	
 	public void set_new_match_available(boolean match){
 		new_inizio=match;
+	}
+	
+	public Stato_nodo next_state(){
+		if (state==null){
+			state=new Procedure_di_gioco.Stato_nodo(get_carte_tavolo_gioco(),
+					get_carte_computer_mano_partita(),get_carte_player_mano_partita(),
+					null,0,0,0,0,0,0);
+		}else{
+			state=new Procedure_di_gioco.Stato_nodo(get_carte_tavolo_gioco(),
+					get_carte_computer_mano_partita(),get_carte_player_mano_partita(),
+					null,num_carte_player_totale,num_carte_computer_totale,num_denari_player_totale,
+					num_denari_computer_totale,num_7_player_totale,num_7_computer_totale);
+		}
+		return state;
 	}
 	
 	public Carta alfa_beta_search(Stato_nodo stato){
@@ -391,15 +562,7 @@ public class Procedure_di_gioco {
 		mescola(0,39,randomize,mazzo_output,true);
 		
 		// simulate a good mix up deck
-		rimescola_carte(1000,randomize,mazzo_output,false);
-		
-		/*
-		for (int i=0;i<mazzo.size();i++){
-			Carta c=mazzo.get(i);
-			System.out.print(c.get_seme().toString() + " " + c.get_valore().toString() + "\n");
-		}
-		*/
-		
+		rimescola_carte(1000,randomize,mazzo_output,false);	
 	}
 	
 	private void rimescola_carte(int numvolte, Random randomize,ArrayList<Carta>mazzo_output,boolean first_time){
@@ -539,6 +702,19 @@ public class Procedure_di_gioco {
 		return carte_player_mano_partita;
 	}
 	
+	public Integer get_num_carte_player_partita(){return num_carte_player_totale;}
+	public Integer get_num_carte_computer_partita(){return num_carte_computer_totale;}
+	public Integer get_num_denari_player_partita(){return num_denari_player_totale;}
+	public Integer get_num_denari_computer_partita(){return num_denari_computer_totale;}
+	public Integer get_num_7_player_partita(){return num_7_player_totale;}
+	public Integer get_num_7_computer_partita(){return num_7_computer_totale;}
+	public Integer get_num_scope_player_partita(){return num_scope_player_totale;}
+	public Integer get_num_scope_computer_partita(){return num_scope_computer_totale;}
+	public boolean get_re_bello_player_partita(){return re_bello_player_totale;}
+	public boolean get_re_bello_computer_partita(){return re_bello_computer_totale;}
+	public boolean get_sette_bello_player_partita(){return sette_bello_player_totale;}
+	public boolean get_sette_bello_computer_partita(){return sette_bello_computer_totale;}
+	
 	public static class Alfa_beta_nodo{
 		private Azione_valore azione_padre=null;
 		private ArrayList<Alfa_beta_nodo> azioni_figli=null;
@@ -603,20 +779,13 @@ public class Procedure_di_gioco {
 		private Integer num_denari_computer=0;
 		private Integer num_carte_player=0;
 		private Integer num_carte_computer=0;
+		private Integer num_7_computer=0;
+		private Integer num_7_player=0;
 		
 		private Carta bestAction=null; // fix the best action; use to fix the best action
 									   // only for the root state
 		
 		public static enum Turno{MIN,MAX}
-		
-		/* PUNTEGGIO
-			|1|: Re Bello
-			|1|: 7 Bello
-			|1|: 1 scopa
-			|0.25|: per ogni 7
-			|1/6 arrotonda per eccesso|: per ogni denaro se ne il player ne il computer sono arrivati ad almeno 6 denari
-			|1/21 arrotonda per eccesso|: per ogni carta se ne il player ne il computer sono arrivati ad almento 21 carte
-		*/
 		
 		public static HashMap<Integer,Carta> copy_carte_tavolo(Stato_nodo stato){
 			HashMap<Integer,Carta> clone=new HashMap<Integer,Carta>();
@@ -646,7 +815,7 @@ public class Procedure_di_gioco {
 		public Stato_nodo(HashMap<Integer,Carta> carteTavolo,ArrayList<Carta> computer,
 				ArrayList<Carta> player,Azione_valore azioneValore,
 				Integer num_cartePlayer,Integer num_carteComputer,Integer num_denariPlayer,
-				Integer num_denariComputer){
+				Integer num_denariComputer,Integer num_7Player,Integer num_7Computer){
 			this.carteTavolo=carteTavolo;
 			this.computer=computer;
 			this.player=player;
@@ -655,6 +824,8 @@ public class Procedure_di_gioco {
 			this.num_denari_computer=num_denariComputer;
 			this.num_carte_player=num_cartePlayer;
 			this.num_carte_computer=num_carteComputer;
+			this.num_7_player=num_7Player;
+			this.num_7_computer=num_7Computer;
 		}
 		
 		public ArrayList<Stato_nodo> azioni(Turno turno){
@@ -684,8 +855,11 @@ public class Procedure_di_gioco {
 						Integer num_carteComputer=new Integer(num_carte_computer);
 						Integer num_denariPlayer=new Integer(num_denari_player);
 						Integer num_denariComputer=new Integer(num_denari_computer);
+						Integer num_7Computer=new Integer(num_7_computer);
+						Integer num_7Player=new Integer(num_7_player);
 						Integer punti=aggiornaPunteggio(turno,azione,carte_prese,
-						 num_cartePlayer,num_carteComputer,num_denariPlayer,num_denariComputer);
+						 num_cartePlayer,num_carteComputer,num_denariPlayer,num_denariComputer,
+						 num_7Player,num_7Computer);
 						
 						Stato_nodo.Azione_valore azione_valore=new Azione_valore(azione,punti,null);
 						
@@ -696,7 +870,8 @@ public class Procedure_di_gioco {
 							carte_computer.remove(i);
 							
 						Stato_nodo stato=new Stato_nodo(carte_tavolo,carte_computer,carte_player,azione_valore,
-								num_cartePlayer,num_carteComputer,num_denariPlayer,num_denariComputer);
+								num_cartePlayer,num_carteComputer,num_denariPlayer,
+								num_denariComputer,num_7Player,num_7Computer);
 						returnAzioni.add(stato);
 					}
 					else{
@@ -714,8 +889,11 @@ public class Procedure_di_gioco {
 							Integer num_carteComputer=new Integer(num_carte_computer);
 							Integer num_denariPlayer=new Integer(num_denari_player);
 							Integer num_denariComputer=new Integer(num_denari_computer);
+							Integer num_7Computer=new Integer(num_7_computer);
+							Integer num_7Player=new Integer(num_7_player);
 							Integer punti=aggiornaPunteggio(turno,azione,carte_prese,
-							 num_cartePlayer,num_carteComputer,num_denariPlayer,num_denariComputer);
+							 num_cartePlayer,num_carteComputer,num_denariPlayer,num_denariComputer,
+							 num_7Player,num_7Computer);
 							
 							Stato_nodo.Azione_valore azione_valore=new Azione_valore(azione,punti,null);
 								
@@ -725,7 +903,8 @@ public class Procedure_di_gioco {
 								carte_computer.remove(i);
 								
 							Stato_nodo stato=new Stato_nodo(carte_tavolo,carte_computer,carte_player,azione_valore,
-									num_cartePlayer,num_carteComputer,num_denariPlayer,num_denariComputer);
+									num_cartePlayer,num_carteComputer,num_denariPlayer,
+									num_denariComputer,num_7Player,num_7Computer);
 							returnAzioni.add(stato);
 						}
 						else{ // add all the composition of the cards
@@ -756,8 +935,11 @@ public class Procedure_di_gioco {
 									Integer num_carteComputer=new Integer(num_carte_computer);
 									Integer num_denariPlayer=new Integer(num_denari_player);
 									Integer num_denariComputer=new Integer(num_denari_computer);
+									Integer num_7Computer=new Integer(num_7_computer);
+									Integer num_7Player=new Integer(num_7_player);
 									Integer punti=aggiornaPunteggio(turno,azione,carte_prese,
-										num_cartePlayer,num_carteComputer,num_denariPlayer,num_denariComputer);
+										num_cartePlayer,num_carteComputer,num_denariPlayer,num_denariComputer,
+										num_7Player,num_7Computer);
 											
 									Stato_nodo.Azione_valore azione_valore=new Azione_valore(azione,punti,j);
 								
@@ -767,7 +949,8 @@ public class Procedure_di_gioco {
 										carte_computer.remove(i);
 
 									Stato_nodo stato=new Stato_nodo(carte_tavolo,carte_computer,carte_player,azione_valore,
-											num_cartePlayer,num_carteComputer,num_denariPlayer,num_denariComputer);
+											num_cartePlayer,num_carteComputer,num_denariPlayer,
+											num_denariComputer,num_7Player,num_7Computer);
 									returnAzioni.add(stato);
 								}
 							} // end for
@@ -788,6 +971,8 @@ public class Procedure_di_gioco {
 								Integer num_carteComputer=new Integer(num_carte_computer);
 								Integer num_denariPlayer=new Integer(num_denari_player);
 								Integer num_denariComputer=new Integer(num_denari_computer);
+								Integer num_7Computer=new Integer(num_7_computer);
+								Integer num_7Player=new Integer(num_7_player);
 								
 								if (turno==Turno.MIN)
 									carte_player.remove(i);
@@ -795,7 +980,8 @@ public class Procedure_di_gioco {
 									carte_computer.remove(i);
 									
 								Stato_nodo stato=new Stato_nodo(carte_tavolo,carte_computer,carte_player,azione_valore,
-									num_cartePlayer,num_carteComputer,num_denariPlayer,num_denariComputer);
+									num_cartePlayer,num_carteComputer,num_denariPlayer,
+									num_denariComputer,num_7Player,num_7Computer);
 								returnAzioni.add(stato);	
 							}
 						}
@@ -806,14 +992,18 @@ public class Procedure_di_gioco {
 		
 		private Integer aggiornaPunteggio(Turno turno, Carta azione, HashMap<Integer,Carta> carte_prese,
 				Integer num_cartePlayer, Integer num_carteComputer,
-				Integer num_denariPlayer, Integer num_denariComputer) {
+				Integer num_denariPlayer, Integer num_denariComputer,
+				Integer num_7Player,Integer num_7Computer) {
 			Integer punteggio_precedente=0;
 				if (this.azioneValore!=null)
 					punteggio_precedente=this.azioneValore.get_valore();
 			Integer punteggio=0;
 			
 			if (carteTavolo.size()==carte_prese.size()){ // scopa
-				punteggio = punteggio + 84;
+				if (azione.get_valore()==1 && carteTavolo.size()==1
+						&& carteTavolo.get(0).get_valore()==1) // se tira un asso è scopa solo
+															   // se in tavolo c'è un asso
+					punteggio = punteggio + 84;
 			}
 			
 			Carta presa=azione;
@@ -835,11 +1025,10 @@ public class Procedure_di_gioco {
 							punteggio = punteggio + 84;
 						}
 					}
-					else{ // non è denari, ma può essere 7
-						if (presa.get_valore()==7){
-							// 84/4=21
-							punteggio=punteggio + 21;
-						}
+					if (presa.get_valore()==7 && num_7Player<3 && num_7Computer<3){	// può essere 7
+						// 84/4=21
+						punteggio=punteggio + 21;
+						if (turno==Turno.MAX){num_7Computer++;}else{num_7Player++;}
 					}
 				}
 				presa=carte_prese.get(i+1);

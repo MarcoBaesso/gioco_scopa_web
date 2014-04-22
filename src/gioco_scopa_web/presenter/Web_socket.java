@@ -12,6 +12,7 @@ import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 
 import gioco_scopa_web.model.*;
+import gioco_scopa_web.model.Procedure_di_gioco.Stato_nodo;
 
 import org.json.*;
 
@@ -90,22 +91,7 @@ public class Web_socket extends MessageInbound{
 		//	Carta c=gioco.mazzo.get(i);
 		//	System.out.print(c.get_seme().toString() + " " + c.get_valore().toString() + "\n");
 		//}
-		
-	 
-	 
-	 
-	 
-	 
-	 /*
-  System.out.println("on open..");
-  this.myoutbound = outbound;
-  try {
-   this.myoutbound.writeTextMessage(CharBuffer.wrap("hi, what's your name?"));
-   
-  } catch (Exception e) {
-   throw new RuntimeException(e);
-  }
-  */
+	 */
  }
  
 	@Override
@@ -122,14 +108,14 @@ public class Web_socket extends MessageInbound{
 
 	@Override
 	protected void onTextMessage(CharBuffer inChar) throws IOException {
-	//System.out.println("Accept msg");
 
 	JSONObject json_obj=new JSONObject();	
 	String message=inChar.toString();
 	int type_message=0;
 	int m1=message.indexOf("newpartita"); //1
-	int m2=message.indexOf("newset"); //2
-	int m3=message.indexOf("carta"); //3
+	int m2=message.indexOf("mossa_computer"); //2
+	int m3=message.indexOf("mossa_player"); //3
+	int m4=message.indexOf("newset"); //4
 	if (m1!=-1){
 		type_message=1;
 	}else{
@@ -138,13 +124,15 @@ public class Web_socket extends MessageInbound{
 		}else{
 			if (m3!=-1){
 				type_message=3;
+			}else{
+				if (m4!=-1){
+					type_message=4;
+				}
 			}			
 		}
 	}
 	
 	switch (type_message){
-		case 0:
-			break;
 		case 1:
 			if (gioco.new_match_is_available()){
 				gioco.set_new_match_available(false);
@@ -152,7 +140,6 @@ public class Web_socket extends MessageInbound{
 				gioco.pesca_carte_tavolo_gioco();
 				gioco.distribuisci_carte_mano_gioco(true);
 				try{
-				
 				
 				JSONArray json_obj_carte_tavolo=new JSONArray();
 				for (int i=0;i<10;i++){
@@ -174,24 +161,13 @@ public class Web_socket extends MessageInbound{
 					}
 				}
 				
-				Procedure_di_gioco.Stato_nodo stato=new Procedure_di_gioco.Stato_nodo(gioco.get_carte_tavolo_gioco(),
-						gioco.get_carte_computer_mano_partita(),gioco.get_carte_player_mano_partita(),null,0,0,0,0);
-				Carta carta_IA_computer=gioco.alfa_beta_search(stato);
-				String carta_json=String.valueOf(carta_IA_computer.get_valore());
-				carta_json=carta_json.concat("_" + gioco.get_string_seme(carta_IA_computer.get_seme()));
-				
-				//-------------------- AGGIORNA PUNTEGGIO TO DO -----------------------------------
-				
 				json_obj.put("type","newpartita");
 				json_obj.put("tavolo",json_obj_carte_tavolo);
 				json_obj.put("player",json_obj_carte_player);
-				json_obj.put("mossa",carta_json);
+				//json_obj.put("mossa",carta_json);
 				
-				//json_obj.toString()
-				
-				String j=json_obj.toString();
-				j=j;
-				// rispondi 
+				CharBuffer outbuffer = CharBuffer.wrap(json_obj.toString());
+				this.myoutbound.writeTextMessage(outbuffer);
 
 				}
 				catch (JSONException e) {
@@ -200,34 +176,27 @@ public class Web_socket extends MessageInbound{
 				}
 			}
 			else{
-				
+				return;
 			}
 			break;
 		case 2:
+			Procedure_di_gioco.Stato_nodo stato=gioco.next_state();
+			
+			Carta carta_IA_computer=gioco.alfa_beta_search(stato);
+			
+			String carta_json=String.valueOf(carta_IA_computer.get_valore());
+			carta_json=carta_json.concat("_" + gioco.get_string_seme(carta_IA_computer.get_seme()));
+			
+			gioco.aggiorna_stato_gioco(Procedure_di_gioco.Stato_nodo.Turno.MAX,carta_IA_computer);
+			
 			break;
 		case 3:
 			break;
+		case 4:
+			break;
 	}
-	
-	//for (int i=0;i<10000000;i++){}
-	
-	CharBuffer outbuffer = CharBuffer.wrap(json_obj.toString());
-	this.myoutbound.writeTextMessage(outbuffer);
-	this.myoutbound.flush();
-	/*
-	CharBuffer outbuf = CharBuffer.wrap("- " + this.name + " says : ");
-	CharBuffer buf = CharBuffer.wrap(inChar);
-  
-	if(name != null) {
-		this.myoutbound.writeTextMessage(outbuf);
-		this.myoutbound.writeTextMessage(buf);
-	} else {
-		this.name = inChar.toString();
-   
-		CharBuffer welcome = CharBuffer.wrap("== Welcome " + this.name + "!");
-		this.myoutbound.writeTextMessage(welcome);
-	}
-  
+
+  /*
 	this.myoutbound.flush();
   */
 	}
