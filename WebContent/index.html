@@ -268,6 +268,10 @@ $(function(){
 				if (carte_rimaste>0){
 					var type="type:'dai_carte'"
 					echo_service.send(JSON.stringify(type));			
+				}
+				else{
+					var type="type:'distribuisci_carte_tavolo'"
+					echo_service.send(JSON.stringify(type));				
 				}			
 			}	
 		break;
@@ -292,6 +296,43 @@ $(function(){
       	
 			var type="type:'mossa_computer'";
 			echo_service.send(JSON.stringify(type));		
+		break;
+		case "distribuisci_carte_tavolo":
+			var turno=json_msg.ultimo_a_prendere;
+			var i=0;
+			while (i<array_carte_tavolo.length){
+				var card=array_carte_tavolo[i];
+				if (turno=="MAX")
+					card.animate({x:900,y:50},2500,"linear");
+				else
+					card.animate({x:900,y:605},2500,"linear");
+				i++;
+			}
+
+			$("#carte_computer").html(json_msg.carte_computer);
+			$("#carte_player").html(json_msg.carte_player);
+			$("#denari_computer").html(json_msg.denari_computer);
+			$("#denari_player").html(json_msg.denari_player);
+			$("#primiera_computer").html(json_msg.primiera_computer);
+			$("#primiera_player").html(json_msg.primiera_player);
+			$("#scope_computer").html(json_msg.scope_computer_totale);
+			$("#scope_player").html(json_msg.scope_player_totale);
+			if (json_msg.sette_bello_player)
+				$("#sette_bello_player").html("si");
+			else			
+				$("#sette_bello_player").html("no");
+			if (json_msg.sette_bello_computer)
+				$("#sette_bello_computer").html("si");
+			else			
+				$("#sette_bello_computer").html("no");
+			if (json_msg.re_bello_player)
+				$("#re_bello_player").html("si");
+			else
+				$("#re_bello_player").html("no");
+			if (json_msg.re_bello_computer)
+				$("#re_bello_computer").html("si");
+			else
+				$("#re_bello_computer").html("no");	
 		break;
 		case "newset":
 		break;

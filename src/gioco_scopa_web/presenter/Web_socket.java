@@ -119,7 +119,8 @@ public class Web_socket extends MessageInbound{
 	int m3=message.indexOf("type:'aggiorna_mossa_computer'"); //3
 	int m4=message.indexOf("type:'mossa_player'"); //4
 	int m5=message.indexOf("type:'dai_carte'"); //5
-	int m6=message.indexOf("type:'newset'"); //6
+	int m6=message.indexOf("type:'distribuisci_carte_tavolo'"); //6
+	int m7=message.indexOf("type:'newset'"); //7
 	if (m1!=-1){
 		type_message=1;
 	}else{
@@ -137,6 +138,10 @@ public class Web_socket extends MessageInbound{
 					}else{
 						if (m6!=-1){
 							type_message=6;
+						}else{
+							if (m7!=-1){
+								type_message=7;
+							}
 						}
 					}
 				}
@@ -315,6 +320,7 @@ public class Web_socket extends MessageInbound{
 			break;
 		}
 		case 5:
+		{
 			gioco.distribuisci_carte_mano_gioco(true);
 			try{
 				JSONArray json_obj_carte_player=new JSONArray();
@@ -337,6 +343,32 @@ public class Web_socket extends MessageInbound{
 			CharBuffer outbuffer = CharBuffer.wrap(json_obj.toString());
 			this.myoutbound.writeTextMessage(outbuffer);
 			break;
+		}
+		case 6:{
+			try{
+				json_obj.put("type","distribuisci_carte_tavolo");
+				json_obj.put("ultimo_a_prendere",gioco.get_ultimo_a_prendere());
+				json_obj.put("carte_computer", gioco.get_num_carte_computer_partita());
+				json_obj.put("carte_player", gioco.get_num_carte_player_partita());
+				json_obj.put("denari_computer", gioco.get_num_denari_computer_partita());
+				json_obj.put("denari_player", gioco.get_num_denari_player_partita());
+				json_obj.put("primiera_computer", gioco.get_num_7_computer_partita());
+				json_obj.put("primiera_player", gioco.get_num_7_player_partita());
+				json_obj.put("sette_bello_computer", gioco.get_sette_bello_computer_partita());
+				json_obj.put("sette_bello_player", gioco.get_sette_bello_player_partita());
+				json_obj.put("re_bello_computer", gioco.get_re_bello_computer_partita());
+				json_obj.put("re_bello_player", gioco.get_re_bello_player_partita());
+				json_obj.put("scope_computer_totale",gioco.get_num_scope_computer_partita());
+				json_obj.put("scope_player_totale",gioco.get_num_scope_player_partita());
+				
+				CharBuffer outbuffer = CharBuffer.wrap(json_obj.toString());
+				this.myoutbound.writeTextMessage(outbuffer);
+			}
+			catch (JSONException e) {
+				e.printStackTrace();
+			}
+			break;
+		}
 	}
 
   /*
