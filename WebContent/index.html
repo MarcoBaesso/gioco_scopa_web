@@ -23,6 +23,9 @@ var array_carte_computer=new Array();
 var array_carte_player=new Array();
 var next_pos_carta_tavolo;
 var pos_carta_computer;
+var carta_player_clicked=null;
+var clickable=false;
+var carte_rimaste=30;
 
 function nuova_partita(){
 	var type="type:'newpartita'";
@@ -45,10 +48,28 @@ function carta_tavolo_on_click(){
 };
 
 function carta_player_on_click(){
-	append(this.carta);
-	var type="type:'mossa_player'";
-	var mossa="carta:'" + this.carta + "'";	
-	echo_service.send(JSON.stringify(type + "," + mossa));
+	if (carta_player_clicked==null && clickable){
+		append(this.carta);
+		var type="type:'mossa_player'";
+		var mossa="carta:'" + this.carta + "'";
+		carta_player_clicked=this;
+
+		array_carte_tavolo[array_carte_tavolo.length]=carta_player_clicked;
+		carta_player_clicked.unclick();
+		carta_player_clicked.click(carta_tavolo_on_click);
+		var j=0;
+
+		var segnale=true;
+		while (j<array_carte_player.length && segnale){
+			if (array_carte_player[j].carta==this.carta){
+				array_carte_player.splice(j,1);
+				segnale=false;			
+			}			
+			j++;
+		}
+		carta_player_clicked.animate({x:carta_player_clicked.attr("x"),y:605},500,"linear");
+		echo_service.send(JSON.stringify(type + "," + mossa));
+	}
 };
 
 $(function(){
@@ -104,13 +125,22 @@ $(function(){
 			pos_carta_computer--;
 			from.animate({x:45+85*next_pos_carta_tavolo,y:327},2000,"linear");
 			next_pos_carta_tavolo++;
+			array_carte_computer.splice(array_carte_computer.length-1,1);
 			var card=from;
 			card.carta=json_msg.carta_computer;
 			array_carte_tavolo[array_carte_tavolo.length]=card;
 			card.click(carta_tavolo_on_click);
 			
-			var type="type:'aggiorna_mossa_computer'";
-			echo_service.send(JSON.stringify(type));
+			if (array_carte_player.length>0){
+				var type="type:'aggiorna_mossa_computer'";
+				echo_service.send(JSON.stringify(type));
+			}
+			else{
+				if (carte_rimaste>0){
+					var type="type:'dai_carte'"
+					echo_service.send(JSON.stringify(type));			
+				}			
+			}		
 		break;
 		case "aggiorna_mossa_computer":
 			carte_tavolo=json_msg.tavolo;
@@ -147,6 +177,8 @@ $(function(){
 			$("#denari_player").html(json_msg.denari_player);
 			$("#primiera_computer").html(json_msg.primiera_computer);
 			$("#primiera_player").html(json_msg.primiera_player);
+			$("#scope_computer").html(json_msg.scope_computer_totale);
+			$("#scope_player").html(json_msg.scope_player_totale);
 			if (json_msg.sette_bello_player)
 				$("#sette_bello_player").html("si");
 			else			
@@ -165,8 +197,101 @@ $(function(){
 				$("#re_bello_computer").html("no");
 
 			$("#turno").html("Turno: TU");
+			clickable=true;
 		break;
 		case "mossa_player":
+			clickable=false;
+			carta_player_clicked.animate({x:next_pos_carta_tavolo,y:605},500,"linear");
+			carte_tavolo=json_msg.tavolo;
+			
+			var i=0;
+			while (i<array_carte_tavolo.length){
+				var card=array_carte_tavolo[i];
+				var j=0;
+				segnale=true;
+				while (j<carte_tavolo.length && segnale){
+					if (carte_tavolo[j]==card.carta){
+						segnale=false;	
+					}
+					j++;	
+				}
+				if (segnale){
+					card.animate({x:900,y:605},2500,"linear");
+					card.unclick();
+					array_carte_tavolo.splice(i,1);
+					i--;				
+				}
+				i++;			
+			}
+			i=0;
+			while (i<array_carte_tavolo.length){
+				var card=array_carte_tavolo[i];
+				card.animate({x:45+85*i,y:327},2500,"linear");
+				i++;
+			}
+			next_pos_carta_tavolo=i;
+			
+			carta_player_clicked=null;
+		
+			$("#carte_computer").html(json_msg.carte_computer);
+			$("#carte_player").html(json_msg.carte_player);
+			$("#denari_computer").html(json_msg.denari_computer);
+			$("#denari_player").html(json_msg.denari_player);
+			$("#primiera_computer").html(json_msg.primiera_computer);
+			$("#primiera_player").html(json_msg.primiera_player);
+			$("#scope_computer").html(json_msg.scope_computer_totale);
+			$("#scope_player").html(json_msg.scope_player_totale);
+			if (json_msg.sette_bello_player)
+				$("#sette_bello_player").html("si");
+			else			
+				$("#sette_bello_player").html("no");
+			if (json_msg.sette_bello_computer)
+				$("#sette_bello_computer").html("si");
+			else			
+				$("#sette_bello_computer").html("no");
+			if (json_msg.re_bello_player)
+				$("#re_bello_player").html("si");
+			else
+				$("#re_bello_player").html("no");
+			if (json_msg.re_bello_computer)
+				$("#re_bello_computer").html("si");
+			else
+				$("#re_bello_computer").html("no");
+
+			$("#turno").html("Turno: COMPUTER");
+
+			if (array_carte_computer.length>0){
+				var type="type:'mossa_computer'";
+				echo_service.send(JSON.stringify(type));
+			}
+			else{
+				if (carte_rimaste>0){
+					var type="type:'dai_carte'"
+					echo_service.send(JSON.stringify(type));			
+				}			
+			}	
+		break;
+		case "dai_carte":
+			carte_player=json_msg.player;
+			i=0;
+			while(i<carte_player.length){
+				var from=paper.image(percorso_carta("RETRO_AVVERSARIO"),900,318,80,145);
+				from.animate({x:275+90*i,y:50},2000,"linear");
+				array_carte_computer[i]=from;
+				from=paper.image(percorso_carta(carte_player[i]),900,318,80,145);
+				from.animate({x:275+90*i,y:605},2000,"linear");
+				var card=from;
+				card.carta=carte_player[i];
+				array_carte_player[i]=card;
+				card.click(carta_player_on_click);
+				i++;
+			}
+			pos_carta_computer=i-1;
+			carte_rimaste=carte_rimaste-6;
+			$("#turno").html("Turno: COMPUTER");
+      	
+			var type="type:'mossa_computer'";
+			echo_service.send(JSON.stringify(type));		
 		break;
 		case "newset":
 		break;
@@ -277,7 +402,7 @@ $(function(){
 	</tr>
   		<td>Scope</td>
 		<td id="scope_computer">0</td>
-		<td id="scoper_player">0</td>	
+		<td id="scope_player">0</td>	
 	</tr>
 </table>
 </div>

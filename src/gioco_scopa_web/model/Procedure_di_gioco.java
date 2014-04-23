@@ -233,12 +233,19 @@ public class Procedure_di_gioco {
 	}
 	
 	public Carta mossa_avversario(Carta carta){
-		if (get_carte_tavolo_gioco().get(carta.get_valore())!=null || carta.get_valore()==1 || !combinazione_presente(carta)){
+		/*
+		if (get_carte_tavolo_gioco().get(carta.get_valore())!=null || 
+				carta.get_valore()==1 || 
+				!combinazione_presente(carta) ||
+				get_combinazioni_disponibili(carta).size()==1){
 			aggiorna_stato_gioco(Stato_nodo.Turno.MIN,carta);
 			return carta;
 		}
 		else
 			return null;
+		*/
+		aggiorna_stato_gioco(Stato_nodo.Turno.MIN,carta);
+		return carta;
 	}
 	
 	public boolean combinazione_presente(Carta carta){
@@ -258,6 +265,28 @@ public class Procedure_di_gioco {
 			return true;
 		else
 			return false;
+	}
+	
+	public ArrayList<ArrayList<Integer>> get_combinazioni_disponibili(Carta carta){
+		ArrayList<ArrayList<Integer>> liste=new ArrayList<ArrayList<Integer>>();
+		ArrayList<ArrayList<Integer>> liste_combinazioni=Stato_nodo.sottoCombinazioni.get(carta.get_valore());
+		for (int i=0;i<liste_combinazioni.size();i++){
+			ArrayList<Integer> combinazione=liste_combinazioni.get(i);
+			int z=0;
+			boolean allarme=true;
+			for (z=0;z<combinazione.size() && allarme;z++){
+				if (carte_tavolo_gioco.get(combinazione.get(z))!=null){
+					allarme=true;
+				}
+				else{
+					allarme=false;
+				}
+			}
+			if (allarme){
+				liste.add(combinazione);
+			}
+		}
+		return liste;
 	}
 	
 	public void aggiorna_stato_gioco(Stato_nodo.Turno turno,Carta carta){
@@ -337,7 +366,39 @@ public class Procedure_di_gioco {
 					}
 				}
 				else{
-					
+					ArrayList<ArrayList<Integer>> liste=get_combinazioni_disponibili(azione);
+					if (liste.size()==0){
+						carte_tavolo_gioco.put(azione.get_valore(),azione);
+						for(int h=0;h<mano.size();h++){
+							Carta card=mano.get(h);
+							if (azione.get_valore().equals(card.get_valore()) && azione.get_seme().equals(card.get_seme()))
+								mano.remove(h);
+						}
+					}
+					else{
+						if (liste.size()>=1){
+							ArrayList<Integer> combinazione=liste.get(0);
+							HashMap<Integer,Carta> carte_prese=new HashMap<Integer,Carta>();
+							
+							for (int z=0;z<combinazione.size();z++){
+								carte_prese.put(combinazione.get(z), carte_tavolo_gioco.get(combinazione.get(z)));
+							}
+							
+							aggiorna_punteggio_partita(turno,azione,carte_prese);
+							
+							// now can be removed cards from carte_tavolo_gioco
+							for (int z=0;z<combinazione.size();z++){
+								carte_prese.put(combinazione.get(z), carte_tavolo_gioco.get(combinazione.get(z)));
+								carte_tavolo_gioco.remove(combinazione.get(z));
+							}
+							
+							for(int h=0;h<mano.size();h++){
+								Carta card=mano.get(h);
+								if (azione.get_valore().equals(card.get_valore()) && azione.get_seme().equals(card.get_seme()))
+									mano.remove(h);
+							}
+						}
+					}
 				}
 					/*ArrayList<Integer> combinazione=state.get_best_state().get_azione_valore().get_combinazione();
 						//get_azione_valore().get_combinazione();
@@ -387,20 +448,28 @@ public class Procedure_di_gioco {
 	public void aggiorna_punteggio_partita(Stato_nodo.Turno turno, Carta azione,
 			HashMap<Integer,Carta> carte_prese){
 	
-	if (carte_tavolo_gioco.size()==carte_prese.size()){ // scopa
-		if (azione.get_valore()==1 && carte_tavolo_gioco.size()==1
-				&& carte_tavolo_gioco.get(1)!=null) // se tira un asso è scopa solo
-													   // se in tavolo c'è un asso
-			switch (turno){
-			case MAX: num_scope_computer_totale++; break;
-			case MIN: num_scope_player_totale++; break;
-			default: 
+	if (carte_tavolo_gioco.size()==carte_prese.size()){ // scopa, se tira un asso è scopa solo
+		   											// se in tavolo c'è un asso
+		boolean segnale=true;
+		if (azione.get_valore()==1){
+			if (carte_tavolo_gioco.size()==1 && carte_tavolo_gioco.get(1)!=null){
+				segnale=true;
+			}else{
+				segnale=false;
 			}
+		}
+		if (segnale){
+			switch (turno){
+				case MAX: num_scope_computer_totale++; break;
+				case MIN: num_scope_player_totale++; break;
+				default: 
+			}
+		}
 	}
 	
 	Carta presa=azione;
 	
-	for (int i=0;i<10;i++){
+	for (int i=0;i<=10;i++){
 		if (presa!=null){
 			switch (turno){
 			case MAX: num_carte_computer_totale++; break;
@@ -630,14 +699,14 @@ public class Procedure_di_gioco {
 	}
 	
 	public Carta get_carta(String carta_string){
-		String seme=carta_string.substring(2,carta_string.length());
-		Integer valore=Integer.parseInt(carta_string.substring(0,1));
+		String seme=carta_string.substring(carta_string.indexOf("_")+1,carta_string.length());
+		Integer valore=Integer.parseInt(carta_string.substring(0,carta_string.indexOf("_")));
 		Integer i=-1;
 		switch (seme){
-		case "DENARI": i=0;
-		case "COPPE": i=1;
-		case "SPADE": i=2;
-		case "BASTONI": i=3;
+		case "DENARI": i=0; break;
+		case "COPPE": i=1; break;
+		case "SPADE": i=2; break;
+		case "BASTONI": i=3; break;
 		}
 		if (i!=-1)
 			return carte.get(10*i+valore-1);
@@ -1108,18 +1177,24 @@ public class Procedure_di_gioco {
 			Integer punteggio_precedente=0;
 				if (this.azioneValore!=null)
 					punteggio_precedente=this.azioneValore.get_valore();
-			Integer punteggio=0;
+			Integer punteggio=0;		
 			
 			if (carteTavolo.size()==carte_prese.size()){ // scopa
-				if (azione.get_valore()==1 && carteTavolo.size()==1
-						&& carteTavolo.get(1)!=null) // se tira un asso è scopa solo
-															   // se in tavolo c'è un asso
+				boolean segnale=true;
+				if (azione.get_valore()==1){
+					if (carteTavolo.size()==1 && carteTavolo.get(1)!=null){
+						segnale=true;
+					}else{
+						segnale=false;
+					}
+				} 
+				if (segnale)
 					punteggio = punteggio + 84;
 			}
 			
 			Carta presa=azione;
 			
-			for (int i=0;i<10;i++){
+			for (int i=0;i<=10;i++){
 				if (presa!=null){
 					if (num_cartePlayer<21 && num_carteComputer<21){ // ++carte
 						// 84/21=4
@@ -1211,7 +1286,7 @@ public class Procedure_di_gioco {
 			sottoCombinazioni.put(2, new ArrayList<ArrayList<Integer>>());
 			ArrayList<Integer> uno_due=new ArrayList<Integer>();uno_due.add(1);uno_due.add(2);
 			sottoCombinazioni.put(3, new ArrayList<ArrayList<Integer>>());sottoCombinazioni.get(3).add(uno_due);
-			ArrayList<Integer> tre_uno=new ArrayList<Integer>();tre_uno.add(3);uno_due.add(1);
+			ArrayList<Integer> tre_uno=new ArrayList<Integer>();tre_uno.add(3);tre_uno.add(1);
 			sottoCombinazioni.put(4, new ArrayList<ArrayList<Integer>>());sottoCombinazioni.get(4).add(tre_uno);
 			ArrayList<Integer> tre_due=new ArrayList<Integer>();tre_due.add(3);tre_due.add(2);
 			ArrayList<Integer> quattro_uno=new ArrayList<Integer>();quattro_uno.add(4);quattro_uno.add(1);
