@@ -232,6 +232,34 @@ public class Procedure_di_gioco {
 		return return_obj;
 	}
 	
+	public Carta mossa_avversario(Carta carta){
+		if (get_carte_tavolo_gioco().get(carta.get_valore())!=null || carta.get_valore()==1 || !combinazione_presente(carta)){
+			aggiorna_stato_gioco(Stato_nodo.Turno.MIN,carta);
+			return carta;
+		}
+		else
+			return null;
+	}
+	
+	public boolean combinazione_presente(Carta carta){
+		ArrayList<ArrayList<Integer>> lista_combinazioni=Stato_nodo.sottoCombinazioni.get(carta.get_valore());
+		boolean segnale=true;
+		for (int i=0;i<lista_combinazioni.size() && segnale;i++){
+			ArrayList<Integer> combinazione=lista_combinazioni.get(i);
+			boolean allarme=true;
+			for (int z=0;z<combinazione.size() && allarme;z++){
+				if (carte_tavolo_gioco.get(combinazione.get(z))==null){
+					allarme=false;
+				}
+			}
+			if (allarme){segnale=false;}
+		}
+		if (segnale=false)
+			return true;
+		else
+			return false;
+	}
+	
 	public void aggiorna_stato_gioco(Stato_nodo.Turno turno,Carta carta){
 		ArrayList<Carta> mano=null;
 		
@@ -244,9 +272,9 @@ public class Procedure_di_gioco {
 		Carta azione=carta;
 		if (carte_tavolo_gioco.get(azione.get_valore())!=null){
 			HashMap<Integer,Carta> carte_prese=new HashMap<Integer,Carta>();
-			carte_prese.put(azione.get_valore(),azione);
-			aggiorna_punteggio_partita(turno,azione,carte_prese);	
-					
+			carte_prese.put(azione.get_valore(),carte_tavolo_gioco.get(azione.get_valore())); // -- 23/04 change second parameter,
+			aggiorna_punteggio_partita(turno,azione,carte_prese);							  //    before was azione
+																 						
 			carte_tavolo_gioco.remove(azione.get_valore());
 					
 			for(int h=0;h<mano.size();h++){
@@ -271,10 +299,52 @@ public class Procedure_di_gioco {
 						mano.remove(h);
 				}
 			}
-			else{ // add all the composition of the cards
-				ArrayList<ArrayList<Integer>> lista_combinazioni=Stato_nodo.
+			else{
+				if (turno==Stato_nodo.Turno.MAX){
+					Integer numero_combinazione=state.get_best_state().get_azione_valore().get_combinazione(); 
+					
+					if (numero_combinazione!=null){
+						ArrayList<Integer> combinazione=Stato_nodo.sottoCombinazioni.get(azione.get_valore()).get(numero_combinazione);
+						
+						HashMap<Integer,Carta> carte_prese=new HashMap<Integer,Carta>();
+						
+						for (int z=0;z<combinazione.size();z++){
+							carte_prese.put(combinazione.get(z), carte_tavolo_gioco.get(combinazione.get(z)));
+						}
+						
+						aggiorna_punteggio_partita(turno,azione,carte_prese);
+						
+						// now can be removed cards from carte_tavolo_gioco
+						for (int z=0;z<combinazione.size();z++){
+							carte_prese.put(combinazione.get(z), carte_tavolo_gioco.get(combinazione.get(z)));
+							carte_tavolo_gioco.remove(combinazione.get(z));
+						}
+						
+						for(int h=0;h<mano.size();h++){
+							Carta card=mano.get(h);
+							if (azione.get_valore().equals(card.get_valore()) && azione.get_seme().equals(card.get_seme()))
+								mano.remove(h);
+						}
+					}
+					else{
+						carte_tavolo_gioco.put(azione.get_valore(),azione);
+						
+						for(int h=0;h<mano.size();h++){
+							Carta card=mano.get(h);
+							if (azione.get_valore().equals(card.get_valore()) && azione.get_seme().equals(card.get_seme()))
+								mano.remove(h);
+						}
+					}
+				}
+				else{
+					
+				}
+					/*ArrayList<Integer> combinazione=state.get_best_state().get_azione_valore().get_combinazione();
+						//get_azione_valore().get_combinazione();
+						Stato_nodo.
 						sottoCombinazioni.get(azione.get_valore());
-				boolean check=false;
+					
+					boolean check=false;
 				for(int j=0;j<lista_combinazioni.size();j++){
 					ArrayList<Integer> combinazione=lista_combinazioni.get(j); 
 					Boolean segnale=true;
@@ -309,7 +379,7 @@ public class Procedure_di_gioco {
 						if (azione.get_valore().equals(card.get_valore()) && azione.get_seme().equals(card.get_seme()))
 							mano.remove(h);
 					}
-				}
+				}*/
 			}
 		}
 	}
@@ -433,9 +503,9 @@ public class Procedure_di_gioco {
 			Integer v=Integer.MIN_VALUE;
 			Integer best_pos=0;
 			for(int i=0;i<azioni.size();i++){
-				Integer min_val=min_value(azioni.get(i),alfa,beta,padre.get_figlio(i));
-				if (v<min_val){
-					v=min_val;
+				Integer max_val=min_value(azioni.get(i),alfa,beta,padre.get_figlio(i));
+				if (v<max_val){
+					v=max_val;
 					best_pos=i;
 				}
 				if (v>=beta){
@@ -557,6 +627,22 @@ public class Procedure_di_gioco {
 	// index must to be in the range 0 .. 39 included 
 	public Carta get_carta(int index){
 		return carte.get(index);
+	}
+	
+	public Carta get_carta(String carta_string){
+		String seme=carta_string.substring(2,carta_string.length());
+		Integer valore=Integer.parseInt(carta_string.substring(0,1));
+		Integer i=-1;
+		switch (seme){
+		case "DENARI": i=0;
+		case "COPPE": i=1;
+		case "SPADE": i=2;
+		case "BASTONI": i=3;
+		}
+		if (i!=-1)
+			return carte.get(10*i+valore-1);
+		else
+			return null;
 	}
 	
 	public void mescola_carte(){
@@ -803,6 +889,8 @@ public class Procedure_di_gioco {
 		private Carta bestAction=null; // fix the best action; use to fix the best action
 									   // only for the root state
 		
+		private Stato_nodo bestState=null;
+		
 		public static enum Turno{MIN,MAX}
 		
 		public static HashMap<Integer,Carta> copy_carte_tavolo(Stato_nodo stato){
@@ -846,6 +934,10 @@ public class Procedure_di_gioco {
 			this.num_7_computer=num_7Computer;
 		}
 		
+		public Azione_valore get_azione_valore(){
+			return azioneValore;
+		}
+		
 		public ArrayList<Stato_nodo> azioni(Turno turno){
 			ArrayList<Stato_nodo> returnAzioni=new ArrayList<Stato_nodo>();
 			ArrayList<Carta> computer_o_player=null;
@@ -868,7 +960,8 @@ public class Procedure_di_gioco {
 						ArrayList<Carta> carte_player=Stato_nodo.copy_player(this);
 						
 						HashMap<Integer,Carta> carte_prese=new HashMap<Integer,Carta>();
-						carte_prese.put(azione.get_valore(),azione);
+						carte_prese.put(azione.get_valore(),carteTavolo.get(azione.get_valore())); // -- 23/04 change second parameter,
+																								   //    before was azione
 						Integer num_cartePlayer=new Integer(num_carte_player);
 						Integer num_carteComputer=new Integer(num_carte_computer);
 						Integer num_denariPlayer=new Integer(num_denari_player);
@@ -1082,11 +1175,16 @@ public class Procedure_di_gioco {
 
 		public void set_best_action(Stato_nodo stato) {
 			this.bestAction = stato.azioneValore.get_azione();
+			this.bestState=stato;
+		}
+		
+		public Stato_nodo get_best_state(){
+			return bestState;
 		}
 		
 		public static class Azione_valore{
 			private Carta azione;
-			private Integer numeroCombinazione; // null if the choosen card is only one
+			private Integer numeroCombinazione=null; // null if the choosen card is only one
 			private Integer valore;
 			
 			public Azione_valore(Carta azione,Integer valore,Integer numeroCombinazione){

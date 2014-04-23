@@ -25,7 +25,8 @@ var next_pos_carta_tavolo;
 var pos_carta_computer;
 
 function nuova_partita(){
-	echo_service.send("1newpartita");
+	var type="type:'newpartita'";
+	echo_service.send(JSON.stringify(type));
 };
 
 function append(text){
@@ -45,6 +46,9 @@ function carta_tavolo_on_click(){
 
 function carta_player_on_click(){
 	append(this.carta);
+	var type="type:'mossa_player'";
+	var mossa="carta:'" + this.carta + "'";	
+	echo_service.send(JSON.stringify(type + "," + mossa));
 };
 
 $(function(){
@@ -57,7 +61,7 @@ $(function(){
 		var carte_player;
 
 		switch(json_msg.type) { 
-		case "1newpartita":
+		case "newpartita":
 			carte_tavolo=json_msg.tavolo;
 			var i=0;
 			while(i<carte_tavolo.length) {
@@ -67,7 +71,6 @@ $(function(){
 				card.carta=carte_tavolo[i];
 				array_carte_tavolo[i]=card;
 				card.click(carta_tavolo_on_click);
-				console.log(card.carta);
   				i++;
  			}
 			next_pos_carta_tavolo=i; 
@@ -89,10 +92,11 @@ $(function(){
 			pos_carta_computer=i-1;
 			
 			$("#turno").html("Turno: COMPUTER");
-      
-			echo_service.send("2mossa_computer");
+      	
+			var type="type:'mossa_computer'";
+			echo_service.send(JSON.stringify(type));
 		break;
-		case "2mossa_computer":
+		case "mossa_computer":
 			var buco=paper.rect(275+90*pos_carta_computer,50,80,145);
 			buco.attr("fill", "#66CC00");
 			buco.attr("stroke", "#66CC00");
@@ -103,9 +107,12 @@ $(function(){
 			var card=from;
 			card.carta=json_msg.carta_computer;
 			array_carte_tavolo[array_carte_tavolo.length]=card;
-			echo_service.send("3aggiorna_mossa_computer");
+			card.click(carta_tavolo_on_click);
+			
+			var type="type:'aggiorna_mossa_computer'";
+			echo_service.send(JSON.stringify(type));
 		break;
-		case "3aggiorna_mossa_computer":
+		case "aggiorna_mossa_computer":
 			carte_tavolo=json_msg.tavolo;
 			var i=0;
 			while (i<array_carte_tavolo.length){
@@ -119,25 +126,49 @@ $(function(){
 					j++;	
 				}
 				if (segnale){
-					card.animate({x:900,y:50},2500,"linear");				
+					card.animate({x:900,y:50},2500,"linear");
+					card.unclick();
+					array_carte_tavolo.splice(i,1);
+					i--;				
 				}
 				i++;			
 			}
-			/*
-			json_msg.carte_computer
-			json_msg.carte_player
-			json_msg.denari_computer
-			json_msg.denari_player
-			json_msg.primiera_computer
-			json_msg.primiera_player
-			json_msg.sette_bello_computer
-			json_msg.sette_bello_player
-			json_msg.re_bello_computer
-			json_msg.re_bello_player*/
+			i=0;
+			while (i<array_carte_tavolo.length){
+				var card=array_carte_tavolo[i];
+				card.animate({x:45+85*i,y:327},2500,"linear");
+				i++;
+			}
+			next_pos_carta_tavolo=i;
+
+			$("#carte_computer").html(json_msg.carte_computer);
+			$("#carte_player").html(json_msg.carte_player);
+			$("#denari_computer").html(json_msg.denari_computer);
+			$("#denari_player").html(json_msg.denari_player);
+			$("#primiera_computer").html(json_msg.primiera_computer);
+			$("#primiera_player").html(json_msg.primiera_player);
+			if (json_msg.sette_bello_player)
+				$("#sette_bello_player").html("si");
+			else			
+				$("#sette_bello_player").html("no");
+			if (json_msg.sette_bello_computer)
+				$("#sette_bello_computer").html("si");
+			else			
+				$("#sette_bello_computer").html("no");
+			if (json_msg.re_bello_player)
+				$("#re_bello_player").html("si");
+			else
+				$("#re_bello_player").html("no");
+			if (json_msg.re_bello_computer)
+				$("#re_bello_computer").html("si");
+			else
+				$("#re_bello_computer").html("no");
+
+			$("#turno").html("Turno: TU");
 		break;
-		case "4mossa_player":
+		case "mossa_player":
 		break;
-		case "5newset":
+		case "newset":
 		break;
 		default: return;
 		}
@@ -221,32 +252,32 @@ $(function(){
 	</tr>
 	<tr>
 		<td>Carte</td>
-		<td></td>
-		<td></td>
+		<td id="carte_computer">0</td>
+		<td id="carte_player">0</td>
 	</tr>
 	<tr>		
 		<td>Denari</td>
-		<td></td>
-		<td></td>
+		<td id="denari_computer">0</td>
+		<td id="denari_player">0</td>
 	</tr>
 	<tr>
 		<td>Re bello</td>
-		<td></td>
-		<td></td>
+		<td id="re_bello_computer">no</td>
+		<td id="re_bello_player">no</td>
 	</tr>
 	<tr>
 		<td>7 bello</td>
-		<td></td>
-		<td></td>
+		<td id="sette_bello_computer">no</td>
+		<td id="sette_bello_player">no</td>
 	</tr>
 	<tr>
 		<td>Primiera</td>
-		<td></td>
-		<td></td>
+		<td id="primiera_computer">0</td>
+		<td id="primiera_player">0</td>
 	</tr>
   		<td>Scope</td>
-		<td></td>
-		<td></td>	
+		<td id="scope_computer">0</td>
+		<td id="scoper_player">0</td>	
 	</tr>
 </table>
 </div>

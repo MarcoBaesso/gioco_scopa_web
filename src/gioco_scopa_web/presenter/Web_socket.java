@@ -114,11 +114,11 @@ public class Web_socket extends MessageInbound{
 	String message=inChar.toString();
 	
 	int type_message=0;
-	int m1=message.indexOf("1newpartita"); //1
-	int m2=message.indexOf("2mossa_computer"); //2
-	int m3=message.indexOf("3aggiorna_mossa_computer"); //3
-	int m4=message.indexOf("4mossa_player"); //4
-	int m5=message.indexOf("5newset"); //5
+	int m1=message.indexOf("type:'newpartita'"); //1
+	int m2=message.indexOf("type:'mossa_computer'"); //2
+	int m3=message.indexOf("type:'aggiorna_mossa_computer'"); //3
+	int m4=message.indexOf("type:'mossa_player'"); //4
+	int m5=message.indexOf("type:'newset'"); //5
 	if (m1!=-1){
 		type_message=1;
 	}else{
@@ -168,7 +168,7 @@ public class Web_socket extends MessageInbound{
 					}
 				}
 				
-				json_obj.put("type","1newpartita");
+				json_obj.put("type","newpartita");
 				json_obj.put("tavolo",json_obj_carte_tavolo);
 				json_obj.put("player",json_obj_carte_player);
 				
@@ -177,7 +177,6 @@ public class Web_socket extends MessageInbound{
 
 				}
 				catch (JSONException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -209,10 +208,10 @@ public class Web_socket extends MessageInbound{
 			}
 			
 			try{
-			json_obj.put("type","2mossa_computer");
+			json_obj.put("type","mossa_computer");
 			json_obj.put("carta_computer",cartajson);
 
-			json_obj_buffer.put("type","3aggiorna_mossa_computer");
+			json_obj_buffer.put("type","aggiorna_mossa_computer");
 			json_obj_buffer.put("tavolo",json_obj_carte_tavolo);
 			json_obj_buffer.put("carte_computer", gioco.get_num_carte_computer_partita());
 			json_obj_buffer.put("carte_player", gioco.get_num_carte_player_partita());
@@ -242,6 +241,16 @@ public class Web_socket extends MessageInbound{
 			json_obj_buffer=new JSONObject();
 			break;
 		case 4:
+			String carta_string=message.substring(28, message.length()-2);
+			Carta carta=gioco.get_carta(carta_string);
+			carta=carta;
+			/*
+			if (gioco.get_carte_tavolo_gioco().get(valore_carta)!=null){
+				
+			}
+			*/
+			
+			
 			break;
 		case 5:
 			break;
