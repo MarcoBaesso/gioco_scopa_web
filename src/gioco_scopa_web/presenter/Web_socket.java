@@ -69,7 +69,6 @@ public class Web_socket extends MessageInbound{
 	int m5=message.indexOf("type:'dai_carte'"); //5
 	int m6=message.indexOf("type:'distribuisci_carte_tavolo'"); //6
 	int m7=message.indexOf("type:'newset'"); //7
-	int m8=message.indexOf("type:'albero'"); //8
 	if (m1!=-1){
 		type_message=1;
 	}else{
@@ -90,10 +89,6 @@ public class Web_socket extends MessageInbound{
 						}else{
 							if (m7!=-1){
 								type_message=7;
-							}else{
-								if (m8!=-1){
-									type_message=8;
-								}
 							}
 						}
 					}
@@ -392,19 +387,6 @@ public class Web_socket extends MessageInbound{
 					return;
 				}
 				break;
-		}
-		case 8:
-		{
-			try{
-				json_obj.put("type","albero");
-				json_obj.put("stringa_albero",gioco.get_json_albero_minimax());
-				CharBuffer outbuffer = CharBuffer.wrap(json_obj.toString());
-				this.myoutbound.writeTextMessage(outbuffer);
-			}
-			catch (JSONException e) {
-				e.printStackTrace();
-			}
-			break;
 		}
 		}
 
