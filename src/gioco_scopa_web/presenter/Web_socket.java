@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,7 +11,6 @@ import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 
 import gioco_scopa_web.model.*;
-import gioco_scopa_web.model.Procedure_di_gioco.Stato_nodo;
 
 import org.json.*;
 
@@ -22,7 +20,6 @@ import org.json.*;
  */
 public class Web_socket extends MessageInbound{
 
-	private String name;
 	private WsOutbound myoutbound;
 	private Procedure_di_gioco gioco;
 	private JSONObject json_obj_buffer=new JSONObject();
@@ -44,62 +41,13 @@ public class Web_socket extends MessageInbound{
 	 catch (InterruptedException e){
 		 e.printStackTrace();
 	 }
-	 //System.out.println("bEGIN client");
-	 /*		
-		//1)
-
-		
-		//2)
-		gioco.mescola_carte();
-		
-		//3)
-		HashMap<Integer,Carta> onTableCards=gioco.pesca_carte_tavolo();
-		
-		for (int i=0;i<10;i++){
-			Carta c=onTableCards.get(i+1);
-			if (c!=null)
-			System.out.print(c.get_seme().toString() + " " + c.get_valore().toString() + "\n");
-		}
-		
-		//4)
-		ArrayList<Carta> computer=new ArrayList<Carta>();
-		ArrayList<Carta> player=new ArrayList<Carta>();
-		// true indicates that cards are distributed from computer to player
-		// and so the first to begin is the player
-		gioco.distribuisci_carte(true,computer,player);
-		
-		for (int i=0;i<computer.size();i++){
-			Carta c=computer.get(i);
-			System.out.print(c.get_seme().toString() + " " + c.get_valore().toString() + "\n");
-		}
-		for (int i=0;i<player.size();i++){
-			Carta c=player.get(i);
-			System.out.print(c.get_seme().toString() + " " + c.get_valore().toString() + "\n");
-		}
-		
-		//5) alfa-beta pruning
-		//prepara nodo iniziale
-		Stato_nodo stato=new Stato_nodo(onTableCards,computer,player,null,0,0,0,0);
-		Carta cartaComputer=gioco.alfa_beta_search(stato);
-		
-		cartaComputer=cartaComputer;
-		
-		
-		//Procedure_di_gioco.Stato_nodo s= new Procedure_di_gioco.Stato_nodo();
-		
-		
-		//for (int i=0;i<gioco.mazzo.size();i++){
-		//	Carta c=gioco.mazzo.get(i);
-		//	System.out.print(c.get_seme().toString() + " " + c.get_valore().toString() + "\n");
-		//}
-	 */
  }
  
 	@Override
 	public void onClose(int status) {
-	//System.out.println("Close client");
 	synchronized(Singleton_gioco.getInstance()){
 		Singleton_gioco.getInstance().set_just_once(false);
+		gioco.azzera_per_nuova_partita();
 	 	Singleton_gioco.getInstance().notify();
 	}
 	}
@@ -151,7 +99,9 @@ public class Web_socket extends MessageInbound{
 	
 	switch (type_message){
 		case 1:
+		{
 			if (gioco.new_match_is_available()){
+				gioco.azzera_per_nuova_partita();
 				gioco.set_new_match_available(false);
 				gioco.mescola_carte();
 				gioco.pesca_carte_tavolo_gioco();
@@ -181,6 +131,7 @@ public class Web_socket extends MessageInbound{
 				json_obj.put("type","newpartita");
 				json_obj.put("tavolo",json_obj_carte_tavolo);
 				json_obj.put("player",json_obj_carte_player);
+				json_obj.put("inizia_computer",gioco.get_begin_from_computer());
 				
 				CharBuffer outbuffer = CharBuffer.wrap(json_obj.toString());
 				this.myoutbound.writeTextMessage(outbuffer);
@@ -194,9 +145,10 @@ public class Web_socket extends MessageInbound{
 				return;
 			}
 			break;
+		}
 		case 2:
 		{
-			gioco.attendi(4000);
+			gioco.attendi(2400);
 			
 			Procedure_di_gioco.Stato_nodo stato=gioco.next_state();
 			
@@ -256,7 +208,6 @@ public class Web_socket extends MessageInbound{
 		}
 		case 4:
 		{ 
-			String forse="ciao";
 			String carta_string=message.substring(28, message.length()-2);
 			Carta mossa=gioco.get_carta(carta_string);
 			Carta carta=gioco.mossa_avversario(mossa);
@@ -334,6 +285,7 @@ public class Web_socket extends MessageInbound{
 				}
 			
 				json_obj.put("type","dai_carte");
+				json_obj.put("inizia_computer",gioco.get_begin_from_computer());
 				json_obj.put("player",json_obj_carte_player);
 			}
 			catch (JSONException e) {
@@ -346,6 +298,7 @@ public class Web_socket extends MessageInbound{
 		}
 		case 6:{
 			try{
+				gioco.dai_il_vincitore();
 				json_obj.put("type","distribuisci_carte_tavolo");
 				json_obj.put("ultimo_a_prendere",gioco.get_ultimo_a_prendere());
 				json_obj.put("carte_computer", gioco.get_num_carte_computer_partita());
@@ -361,19 +314,72 @@ public class Web_socket extends MessageInbound{
 				json_obj.put("scope_computer_totale",gioco.get_num_scope_computer_partita());
 				json_obj.put("scope_player_totale",gioco.get_num_scope_player_partita());
 				
+				json_obj.put("num_set_vinti_computer", gioco.get_num_set_vinti_computer());
+				json_obj.put("num_set_vinti_player",gioco.get_num_set_vinti_player());
+				json_obj.put("num_set_giocati", gioco.get_num_set_giocati());
+				
 				CharBuffer outbuffer = CharBuffer.wrap(json_obj.toString());
 				this.myoutbound.writeTextMessage(outbuffer);
+				
+				gioco.set_new_set_available(true);
 			}
 			catch (JSONException e) {
 				e.printStackTrace();
 			}
 			break;
 		}
+		case 7:{
+			{
+				gioco.attendi(1000);
+				if (gioco.new_set_is_available()){
+					gioco.azzera_per_nuovo_set();
+					gioco.mescola_carte();
+					gioco.pesca_carte_tavolo_gioco();
+					gioco.distribuisci_carte_mano_gioco(gioco.get_begin_from_computer());
+					
+					try{
+					
+					JSONArray json_obj_carte_tavolo=new JSONArray();
+					for (int i=0;i<10;i++){
+						Carta carta=gioco.get_carte_tavolo_gioco().get(i+1);
+						if (carta!=null){
+							String carta_json=String.valueOf(carta.get_valore());
+							carta_json=carta_json.concat("_" + gioco.get_string_seme(carta.get_seme()));
+							json_obj_carte_tavolo.put(carta_json);						
+						}
+					}
+					
+					JSONArray json_obj_carte_player=new JSONArray();
+					for (int i=0;i<gioco.get_carte_player_mano_partita().size();i++){
+						Carta carta=gioco.get_carte_player_mano_partita().get(i);
+						if (carta!=null){
+							String carta_json=String.valueOf(carta.get_valore());
+							carta_json=carta_json.concat("_" + gioco.get_string_seme(carta.get_seme()));
+							json_obj_carte_player.put(carta_json);	
+						}
+					}
+					
+					json_obj.put("type","newset");
+					json_obj.put("tavolo",json_obj_carte_tavolo);
+					json_obj.put("player",json_obj_carte_player);
+					json_obj.put("inizia_computer",gioco.get_begin_from_computer());
+					
+					CharBuffer outbuffer = CharBuffer.wrap(json_obj.toString());
+					this.myoutbound.writeTextMessage(outbuffer);
+
+					}
+					catch (JSONException e) {
+						e.printStackTrace();
+					}
+				}
+				else{
+					return;
+				}
+				break;
+			}
+		}
 	}
 
-  /*
-	this.myoutbound.flush();
-  */
 	}
 
 }

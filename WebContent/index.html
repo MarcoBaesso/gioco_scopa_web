@@ -24,8 +24,10 @@ var array_carte_player=new Array();
 var next_pos_carta_tavolo;
 var pos_carta_computer;
 var carta_player_clicked=null;
-var clickable=false;
+var clickable_carte_player=false;
 var carte_rimaste=30;
+var new_set_available=false;
+var inizia_computer;
 
 function nuova_partita(){
 	var type="type:'newpartita'";
@@ -47,8 +49,16 @@ function carta_tavolo_on_click(){
 	append(this.carta);
 };
 
+function new_set(){
+	if (new_set_available){
+		new_set_available=false;
+		var type="type:'newset'";
+		echo_service.send(JSON.stringify(type));
+	}
+}
+
 function carta_player_on_click(){
-	if (carta_player_clicked==null && clickable){
+	if (carta_player_clicked==null && clickable_carte_player){
 		append(this.carta);
 		var type="type:'mossa_player'";
 		var mossa="carta:'" + this.carta + "'";
@@ -83,7 +93,33 @@ $(function(){
 
 		switch(json_msg.type) { 
 		case "newpartita":
+			array_carte_tavolo=[];
+			array_carte_computer=[];
+			array_carte_player=[];
+			carta_player_clicked=null;
+			carte_rimaste=30;
+			new_set_available=false;
+
+			$("#carte_computer").html(0);
+			$("#carte_player").html(0);
+			$("#denari_computer").html(0);
+			$("#denari_player").html(0);
+			$("#primiera_computer").html(0);
+			$("#primiera_player").html(0);
+			$("#scope_computer").html(0);
+			$("#scope_player").html(0);
+			$("#sette_bello_player").html("no");
+			$("#sette_bello_computer").html("no");
+			$("#re_bello_player").html("no");
+			$("#re_bello_computer").html("no");
+
+			$("#set_giocati").html("Numero set giocati: 0");
+			$("#set_vinti_computer").html("Vinti computer: 0");
+			$("#set_vinti_player").html("Vinti player: 0");
+			
 			carte_tavolo=json_msg.tavolo;
+			inizia_computer=json_msg.inizia_computer;
+			clickable_carte_player=!inizia_computer;
 			var i=0;
 			while(i<carte_tavolo.length) {
 				var from=paper.image(percorso_carta(carte_tavolo[i]),900,318,80,145);
@@ -130,17 +166,8 @@ $(function(){
 			card.carta=json_msg.carta_computer;
 			array_carte_tavolo[array_carte_tavolo.length]=card;
 			card.click(carta_tavolo_on_click);
-			
-			if (array_carte_player.length>0){
-				var type="type:'aggiorna_mossa_computer'";
-				echo_service.send(JSON.stringify(type));
-			}
-			else{
-				if (carte_rimaste>0){
-					var type="type:'dai_carte'"
-					echo_service.send(JSON.stringify(type));			
-				}			
-			}		
+			var type="type:'aggiorna_mossa_computer'";
+			echo_service.send(JSON.stringify(type));	
 		break;
 		case "aggiorna_mossa_computer":
 			carte_tavolo=json_msg.tavolo;
@@ -197,11 +224,24 @@ $(function(){
 				$("#re_bello_computer").html("no");
 
 			$("#turno").html("Turno: TU");
-			clickable=true;
+			clickable_carte_player=true;
+
+
+			if (array_carte_player.length==0){
+				if (carte_rimaste>0){
+					var type="type:'dai_carte'"
+					echo_service.send(JSON.stringify(type));			
+				}
+				else{
+					var type="type:'distribuisci_carte_tavolo'"
+					echo_service.send(JSON.stringify(type));				
+				}
+			}
 		break;
 		case "mossa_player":
-			clickable=false;
+			clickable_carte_player=false;
 			carta_player_clicked.animate({x:next_pos_carta_tavolo,y:605},500,"linear");
+			carta_player_clicked=null;
 			carte_tavolo=json_msg.tavolo;
 			
 			var i=0;
@@ -230,8 +270,6 @@ $(function(){
 				i++;
 			}
 			next_pos_carta_tavolo=i;
-			
-			carta_player_clicked=null;
 		
 			$("#carte_computer").html(json_msg.carte_computer);
 			$("#carte_player").html(json_msg.carte_player);
@@ -277,6 +315,7 @@ $(function(){
 		break;
 		case "dai_carte":
 			carte_player=json_msg.player;
+			var begin_from_computer=json_msg.inizia_computer;
 			i=0;
 			while(i<carte_player.length){
 				var from=paper.image(percorso_carta("RETRO_AVVERSARIO"),900,318,80,145);
@@ -292,10 +331,17 @@ $(function(){
 			}
 			pos_carta_computer=i-1;
 			carte_rimaste=carte_rimaste-6;
-			$("#turno").html("Turno: COMPUTER");
+
+			if (begin_from_computer){
+				$("#turno").html("Turno: COMPUTER");
       	
-			var type="type:'mossa_computer'";
-			echo_service.send(JSON.stringify(type));		
+				var type="type:'mossa_computer'";
+				echo_service.send(JSON.stringify(type));
+			}else{
+				$("#turno").html("Turno: TU");
+				clickable_carte_player=true;
+				carta_player_clicked=null;
+			}
 		break;
 		case "distribuisci_carte_tavolo":
 			var turno=json_msg.ultimo_a_prendere;
@@ -332,9 +378,82 @@ $(function(){
 			if (json_msg.re_bello_computer)
 				$("#re_bello_computer").html("si");
 			else
-				$("#re_bello_computer").html("no");	
+				$("#re_bello_computer").html("no");
+
+			$("#turno").html("Turno: END");
+
+			$("#set_giocati").html("Numero set giocati: " + json_msg.num_set_giocati);
+			$("#set_vinti_computer").html("Vinti computer: " + json_msg.num_set_vinti_computer);
+			$("#set_vinti_player").html("Vinti player: " + json_msg.num_set_vinti_player);
+
+			new_set_available=true;	
 		break;
 		case "newset":
+			array_carte_tavolo=[];
+			array_carte_computer=[];
+			array_carte_player=[];
+			carta_player_clicked=null;
+			carte_rimaste=30;
+			new_set_available=false;
+			prese_computer = paper.rect(900, 50, 80, 145);
+			prese_computer.attr("fill", "#66CC00");
+			prese_computer.attr("stroke", "#66CC00");
+			prese_player = paper.rect(900, 605, 80, 145);
+			prese_player.attr("fill", "#66CC00");
+			prese_player.attr("stroke", "#66CC00");						
+
+			$("#carte_computer").html(0);
+			$("#carte_player").html(0);
+			$("#denari_computer").html(0);
+			$("#denari_player").html(0);
+			$("#primiera_computer").html(0);
+			$("#primiera_player").html(0);
+			$("#scope_computer").html(0);
+			$("#scope_player").html(0);
+			$("#sette_bello_player").html("no");
+			$("#sette_bello_computer").html("no");
+			$("#re_bello_player").html("no");
+			$("#re_bello_computer").html("no");
+	
+			carte_tavolo=json_msg.tavolo;
+			inizia_computer=json_msg.inizia_computer;
+			clickable_carte_player=!inizia_computer;
+			var i=0;
+			while(i<carte_tavolo.length) {
+				var from=paper.image(percorso_carta(carte_tavolo[i]),900,318,80,145);
+				from.animate({x:45+85*i,y:327},2000,"linear");
+				var card=from;
+				card.carta=carte_tavolo[i];
+				array_carte_tavolo[i]=card;
+				card.click(carta_tavolo_on_click);
+  				i++;
+ 			}
+			next_pos_carta_tavolo=i; 
+
+			carte_player=json_msg.player;
+			i=0;
+			while(i<carte_player.length){
+				var from=paper.image(percorso_carta("RETRO_AVVERSARIO"),900,318,80,145);
+				from.animate({x:275+90*i,y:50},2000,"linear");
+				array_carte_computer[i]=from;
+				from=paper.image(percorso_carta(carte_player[i]),900,318,80,145);
+				from.animate({x:275+90*i,y:605},2000,"linear");
+				var card=from;
+				card.carta=carte_player[i];
+				array_carte_player[i]=card;
+				card.click(carta_player_on_click);
+				i++;
+			}
+			pos_carta_computer=i-1;
+			
+			if (inizia_computer){
+				$("#turno").html("Turno: COMPUTER");
+      	
+				var type="type:'mossa_computer'";
+				echo_service.send(JSON.stringify(type));
+			}else{
+				$("#turno").html("Turno: TU");
+			}
 		break;
 		default: return;
 		}
@@ -408,6 +527,8 @@ $(function(){
 
 <h2 id="turno">Turno:</h2>
 
+<h1 onClick="new_set()">New set</h2>
+
 <div id="punteggio">
 <h1>Punteggio</h1>
 	<table>
@@ -445,9 +566,14 @@ $(function(){
 		<td id="scope_computer">0</td>
 		<td id="scope_player">0</td>	
 	</tr>
-</table>
+	</table>
 </div>
 <div>
+<ul id="set">
+<li id="set_giocati">Numero set giocati: 0</li>
+<li id="set_vinti_computer">Vinti computer: 0</li>
+<li id="set_vinti_player">Vinti player: 0</li>
+</ul>
 <ul id="eventi_websocket"></ul>
 </div>
 

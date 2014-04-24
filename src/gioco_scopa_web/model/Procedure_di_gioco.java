@@ -38,6 +38,8 @@ public class Procedure_di_gioco {
 	private Integer numero_set_vinti_player=0;
 	
 	private boolean new_inizio=true;
+	private boolean new_set=false;
+	private boolean begin_from_computer=true;
 	
 	// stato carte
 	private HashMap<Integer,Carta> carte_tavolo_gioco=null;
@@ -64,60 +66,6 @@ public class Procedure_di_gioco {
 	private Procedure_di_gioco(){
 		inizializza_carte();
 	}
-	
-	/*
-	public static void main(String[] args){
-		Procedure_di_gioco gioco=Procedure_di_gioco.getInstance();
-		
-		//1)
-		Procedure_di_gioco.getInstance().inizializza_carte();
-		
-		//2)
-		gioco.mescola_carte();
-		
-		//3)
-		HashMap<Integer,Carta> onTableCards=gioco.pesca_carte_tavolo();
-		
-		for (int i=0;i<10;i++){
-			Carta c=onTableCards.get(i+1);
-			if (c!=null)
-			System.out.print(c.get_seme().toString() + " " + c.get_valore().toString() + "\n");
-		}
-		
-		//4)
-		ArrayList<Carta> computer=new ArrayList<Carta>();
-		ArrayList<Carta> player=new ArrayList<Carta>();
-		// true indicates that cards are distributed from computer to player
-		// and so the first to begin is the player
-		gioco.distribuisci_carte(true,computer,player);
-		
-		for (int i=0;i<computer.size();i++){
-			Carta c=computer.get(i);
-			System.out.print(c.get_seme().toString() + " " + c.get_valore().toString() + "\n");
-		}
-		for (int i=0;i<player.size();i++){
-			Carta c=player.get(i);
-			System.out.print(c.get_seme().toString() + " " + c.get_valore().toString() + "\n");
-		}
-		
-		//5) alfa-beta pruning
-		//prepara nodo iniziale
-		Stato_nodo stato=new Stato_nodo(onTableCards,computer,player,null,0,0,0,0);
-		Carta cartaComputer=gioco.alfa_beta_search(stato);
-		
-		cartaComputer=cartaComputer;
-		
-		
-		//Procedure_di_gioco.Stato_nodo s= new Procedure_di_gioco.Stato_nodo();
-		
-		
-		//for (int i=0;i<gioco.mazzo.size();i++){
-		//	Carta c=gioco.mazzo.get(i);
-		//	System.out.print(c.get_seme().toString() + " " + c.get_valore().toString() + "\n");
-		//}
-		
-	}
-*/
 	
 	private static Integer max(Integer a,Integer b){if (a>b) return a; else return b;}
 	
@@ -237,6 +185,122 @@ public class Procedure_di_gioco {
 			return true;
 		else
 			return false;
+	}
+	
+	public void azzera_per_nuova_partita(){
+		mazzo.clear();
+		
+		numero_set_giocati=0;
+		numero_set_vinti_computer=0;
+		numero_set_vinti_player=0;
+		
+		new_inizio=true;
+		new_set=false;
+		begin_from_computer=true;
+		
+		// stato carte
+		carte_tavolo_gioco=null;
+		carte_computer_mano_partita.clear();
+		carte_player_mano_partita.clear();
+		
+		// stato punteggio 
+		num_carte_player_totale=0;
+		num_carte_computer_totale=0;
+		num_denari_player_totale=0;
+		num_denari_computer_totale=0;
+		num_7_player_totale=0;
+		num_7_computer_totale=0;
+		re_bello_player_totale=false;
+		re_bello_computer_totale=false;
+		sette_bello_player_totale=false;
+		sette_bello_computer_totale=false;
+		num_scope_player_totale=0;
+		num_scope_computer_totale=0;
+		ultimo_a_prendere=null;
+		
+		state=null;	
+	}
+	
+	public void azzera_per_nuovo_set(){
+		mazzo.clear();
+		
+		new_set=false;
+		begin_from_computer=!begin_from_computer;
+		
+		// stato carte
+		carte_tavolo_gioco=null;
+		carte_computer_mano_partita.clear();
+		carte_player_mano_partita.clear();
+		
+		// stato punteggio 
+		num_carte_player_totale=0;
+		num_carte_computer_totale=0;
+		num_denari_player_totale=0;
+		num_denari_computer_totale=0;
+		num_7_player_totale=0;
+		num_7_computer_totale=0;
+		re_bello_player_totale=false;
+		re_bello_computer_totale=false;
+		sette_bello_player_totale=false;
+		sette_bello_computer_totale=false;
+		num_scope_player_totale=0;
+		num_scope_computer_totale=0;
+		ultimo_a_prendere=null;
+		
+		state=null;	
+	}
+	
+	public void dai_il_vincitore(){
+		Integer punti_computer=0;
+		Integer punti_player=0;
+		numero_set_giocati++;
+
+		if (num_carte_computer_totale>num_carte_player_totale){
+			punti_computer++;
+		}
+		else{
+			if (num_carte_computer_totale<num_carte_player_totale){
+				punti_player++;
+			}
+		}
+
+		if (num_denari_computer_totale>num_denari_player_totale){
+			punti_computer++;
+		}
+		else{
+			if (num_denari_computer_totale<num_denari_player_totale){
+				punti_player++;
+			}
+		}
+
+		if (num_7_computer_totale>num_7_player_totale){
+			punti_computer++;
+		}
+		else{
+			if (num_7_computer_totale<num_7_player_totale){
+				punti_player++;
+			}
+		}
+
+		if (re_bello_player_totale) punti_player++;
+		
+		if (re_bello_computer_totale) punti_computer++;
+
+		if (sette_bello_player_totale) punti_player++;
+		
+		if (sette_bello_computer_totale) punti_computer++;
+		
+		punti_computer=punti_computer+num_scope_computer_totale;
+		punti_player=punti_player+num_scope_player_totale;
+
+		if (punti_computer>punti_player){
+			numero_set_vinti_computer++;
+		}
+		else{
+			if (punti_computer<punti_player){
+				numero_set_vinti_player++;
+			}
+		}
 	}
 	
 	public Carta mossa_avversario(Carta carta){
@@ -532,6 +596,14 @@ public class Procedure_di_gioco {
 	
 	public void set_new_match_available(boolean match){
 		new_inizio=match;
+	}
+	
+	public boolean new_set_is_available(){
+		return new_set;
+	}
+	
+	public void set_new_set_available(boolean set){
+		new_set=set;
 	}
 	
 	public Stato_nodo next_state(){
@@ -891,6 +963,10 @@ public class Procedure_di_gioco {
 		return carte_player_mano_partita;
 	}
 	
+	public boolean get_begin_from_computer(){return begin_from_computer;}
+	public Integer get_num_set_giocati(){return numero_set_giocati;}
+	public Integer get_num_set_vinti_computer(){return numero_set_vinti_computer;}
+	public Integer get_num_set_vinti_player(){return numero_set_vinti_player;}
 	public Integer get_num_carte_player_partita(){return num_carte_player_totale;}
 	public Integer get_num_carte_computer_partita(){return num_carte_computer_totale;}
 	public Integer get_num_denari_player_partita(){return num_denari_player_totale;}
@@ -903,6 +979,7 @@ public class Procedure_di_gioco {
 	public boolean get_re_bello_computer_partita(){return re_bello_computer_totale;}
 	public boolean get_sette_bello_player_partita(){return sette_bello_player_totale;}
 	public boolean get_sette_bello_computer_partita(){return sette_bello_computer_totale;}
+	
 	public String get_ultimo_a_prendere(){
 		switch (ultimo_a_prendere){
 			case MAX : return "MAX";
