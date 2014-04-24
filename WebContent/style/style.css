@@ -1,3 +1,70 @@
-div{
+.bottone{
+	display:inline;
+	background-color:#0099FF;
+	border-style:solid;
+	border-color:#003366;
+	padding:1.5px 1.5px 1.5px 1.5px;
+	font:italic bold 18px Arial;
+	
+}
 
+ul{
+	list-style-type:circle;
+font:italic bold 18px Arial;
+}
+
+#turno{
+	font:italic bold 18px Arial;
+	color:#FF3333;
+}
+
+#bottoni{
+	padding-top:3cm;
+	margin-left:15px;
+}
+
+#punteggio{
+	margin-top:2cm;
+}
+
+#tabella_punteggio{
+	margin-left:10px;
+}
+
+table,
+td,
+th
+{
+    border:3px solid #003366;
+    border-collapse:collapse
+}
+
+td,
+th
+{
+    padding:3px 5px
+}
+
+td
+{
+    text-align: center
+}
+ 
+th
+{
+    text-align: center
+}
+
+.campo_th{
+	font:italic bold 15px Arial;
+}
+
+.giocatore_player{
+	font:italic bold 15px Arial;
+	color:#003366;
+}
+
+.giocatore_computer{	
+	font:italic bold 15px Arial;
+	color:#FF3333;
 }

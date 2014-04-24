@@ -69,6 +69,7 @@ public class Web_socket extends MessageInbound{
 	int m5=message.indexOf("type:'dai_carte'"); //5
 	int m6=message.indexOf("type:'distribuisci_carte_tavolo'"); //6
 	int m7=message.indexOf("type:'newset'"); //7
+	int m8=message.indexOf("type:'albero'"); //8
 	if (m1!=-1){
 		type_message=1;
 	}else{
@@ -89,6 +90,10 @@ public class Web_socket extends MessageInbound{
 						}else{
 							if (m7!=-1){
 								type_message=7;
+							}else{
+								if (m8!=-1){
+									type_message=8;
+								}
 							}
 						}
 					}
@@ -172,6 +177,7 @@ public class Web_socket extends MessageInbound{
 			try{
 			json_obj.put("type","mossa_computer");
 			json_obj.put("carta_computer",cartajson);
+			json_obj.put("albero",gioco.get_json_albero_minimax());
 
 			json_obj_buffer.put("type","aggiorna_mossa_computer");
 			json_obj_buffer.put("tavolo",json_obj_carte_tavolo);
@@ -318,6 +324,16 @@ public class Web_socket extends MessageInbound{
 				json_obj.put("num_set_vinti_player",gioco.get_num_set_vinti_player());
 				json_obj.put("num_set_giocati", gioco.get_num_set_giocati());
 				
+				if (gioco.get_num_set_vinti_computer()>gioco.get_num_set_vinti_player()	&&
+						gioco.get_num_set_vinti_computer()>=2){
+						gioco.set_new_match_available(true);
+				}else{
+					if (gioco.get_num_set_vinti_player()>gioco.get_num_set_vinti_computer() && 
+							gioco.get_num_set_vinti_player()>=2){
+						gioco.set_new_match_available(true);
+					}
+				}
+				
 				CharBuffer outbuffer = CharBuffer.wrap(json_obj.toString());
 				this.myoutbound.writeTextMessage(outbuffer);
 				
@@ -328,8 +344,8 @@ public class Web_socket extends MessageInbound{
 			}
 			break;
 		}
-		case 7:{
-			{
+		case 7:
+		{
 				gioco.attendi(1000);
 				if (gioco.new_set_is_available()){
 					gioco.azzera_per_nuovo_set();
@@ -376,9 +392,21 @@ public class Web_socket extends MessageInbound{
 					return;
 				}
 				break;
-			}
 		}
-	}
+		case 8:
+		{
+			try{
+				json_obj.put("type","albero");
+				json_obj.put("stringa_albero",gioco.get_json_albero_minimax());
+				CharBuffer outbuffer = CharBuffer.wrap(json_obj.toString());
+				this.myoutbound.writeTextMessage(outbuffer);
+			}
+			catch (JSONException e) {
+				e.printStackTrace();
+			}
+			break;
+		}
+		}
 
 	}
 

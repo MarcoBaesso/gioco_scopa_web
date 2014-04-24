@@ -2,27 +2,18 @@ package gioco_scopa_web.model;
 
 import gioco_scopa_web.model.Procedure_di_gioco.Stato_nodo.Azione_valore;
 
-
-
-
-
-//import java.io.PrintWriter;
 import java.util.ArrayList;
-//import java.util.Collection;
 import java.util.HashMap;
 import java.util.Random;
-//import java.util.Set;
-
-
-
-
 
 import org.json.*;
 
+/*
 import java.io.BufferedWriter; 
 import java.io.File; 
 import java.io.FileWriter; 
 import java.io.IOException;
+*/
 
 public class Procedure_di_gioco {
 	private ArrayList<Carta> carte=new ArrayList<Carta>(); 
@@ -62,6 +53,8 @@ public class Procedure_di_gioco {
 	private Stato_nodo.Turno ultimo_a_prendere=null;
 	
 	private Stato_nodo state=null;
+	
+	private String json_albero_minimax=null;
 	
 	private Procedure_di_gioco(){
 		inizializza_carte();
@@ -626,7 +619,8 @@ public class Procedure_di_gioco {
 		max_value(stato,Integer.MIN_VALUE,Integer.MAX_VALUE,padre);
 		JSONObject obj=to_JSon(padre);
 		String string_json=JSon_to_string_albero(obj);
-		
+		json_albero_minimax=string_json;
+		/*
 		File outputFile = new File("/home/marcobaesso/Eclipse_Workspace/gioco_scopa_web/WebContent/data/albero.txt"); 
 		try {
 			FileWriter fw = new FileWriter(outputFile.getAbsolutePath()); 
@@ -638,7 +632,7 @@ public class Procedure_di_gioco {
 		} catch (IOException e) { 
 			e.printStackTrace(); 
 		} 
-		
+		*/
 		
 		returnAzione=stato.get_best_action();
 		return returnAzione;
@@ -961,6 +955,10 @@ public class Procedure_di_gioco {
 	
 	public ArrayList<Carta> get_carte_player_mano_partita(){
 		return carte_player_mano_partita;
+	}
+	
+	public String get_json_albero_minimax(){
+		return json_albero_minimax;
 	}
 	
 	public boolean get_begin_from_computer(){return begin_from_computer;}

@@ -5,13 +5,9 @@
 <link href="style/style.css" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
 <script type="text/javascript" src="js/raphael.js"></script>
+<script type="text/javascript" src="js/globali.js"></script>
 <title>gioco_scopa</title>
 <script> 
-  
-	  /*var startTime = new Date().getTime(); // get the current time
-5.
-while (new Date().getTime() < startTime + 5000); // hog cpu
-      //echo_service.close();*/  
   
 var mazzo;
 var paper;
@@ -29,14 +25,13 @@ var carte_rimaste=30;
 var new_set_available=false;
 var inizia_computer;
 
+var num_set_giocati=0;
+var num_set_vinti_computer=0;
+var num_set_vinti_player=0;
+
 function nuova_partita(){
 	var type="type:'newpartita'";
 	echo_service.send(JSON.stringify(type));
-};
-
-function append(text){
-	document.getElementById("eventi_websocket").insertAdjacentHTML('beforeend', 
-	"<li>" + text + ";</li>");
 };
 
 function percorso_carta(carta){
@@ -46,7 +41,6 @@ function percorso_carta(carta){
 };
 
 function carta_tavolo_on_click(){
-	append(this.carta);
 };
 
 function new_set(){
@@ -59,7 +53,6 @@ function new_set(){
 
 function carta_player_on_click(){
 	if (carta_player_clicked==null && clickable_carte_player){
-		append(this.carta);
 		var type="type:'mossa_player'";
 		var mossa="carta:'" + this.carta + "'";
 		carta_player_clicked=this;
@@ -83,22 +76,33 @@ function carta_player_on_click(){
 };
 
 $(function(){
+
+	$('#new_set').css({ "visibility": 'hidden'});
+	$('#turno').css({ "visibility": 'hidden'});
+
     	echo_service = new WebSocket('ws://localhost:9999/gioco_scopa_web/gioco'); 
     
    	echo_service.onmessage = function(event){
-		//append(event.data);
 		var json_msg=jQuery.parseJSON(event.data);
 		var carte_tavolo;
 		var carte_player;
 
 		switch(json_msg.type) { 
 		case "newpartita":
+
+			$('#nuova_partita').css({ "visibility": 'hidden'});
+			$('#new_set').css({ "visibility": 'visible'});
+			$('#turno').css({ "visibility": 'visible'});
+			
 			array_carte_tavolo=[];
 			array_carte_computer=[];
 			array_carte_player=[];
 			carta_player_clicked=null;
 			carte_rimaste=30;
 			new_set_available=false;
+			num_set_giocati=0;
+			num_set_vinti_computer=0;
+			num_set_vinti_player=0;
 
 			$("#carte_computer").html(0);
 			$("#carte_player").html(0);
@@ -166,6 +170,11 @@ $(function(){
 			card.carta=json_msg.carta_computer;
 			array_carte_tavolo[array_carte_tavolo.length]=card;
 			card.click(carta_tavolo_on_click);
+
+			var stringa_albero=json_msg.albero;
+			console.clear();
+			console.log(stringa_albero);
+
 			var type="type:'aggiorna_mossa_computer'";
 			echo_service.send(JSON.stringify(type));	
 		break;
@@ -386,6 +395,25 @@ $(function(){
 			$("#set_vinti_computer").html("Vinti computer: " + json_msg.num_set_vinti_computer);
 			$("#set_vinti_player").html("Vinti player: " + json_msg.num_set_vinti_player);
 
+			num_set_giocati=json_msg.num_set_giocati;
+			num_set_vinti_computer=json_msg.num_set_vinti_computer;
+			num_set_vinti_player=json_msg.num_set_vinti_player;
+
+			if (num_set_vinti_computer>num_set_vinti_player && num_set_vinti_computer>=2){
+				$('#nuova_partita').css({ "visibility": 'visible'});
+				$('#new_set').css({ "visibility": 'hidden'});
+				$('#turno').css({ "visibility": 'hidden'});
+				alert("Hai perso!");
+
+			}else{
+				if (num_set_vinti_player>num_set_vinti_computer && num_set_vinti_player>=2){
+					$('#nuova_partita').css({ "visibility": 'visible'});
+					$('#new_set').css({ "visibility": 'hidden'});
+					$('#turno').css({ "visibility": 'hidden'});
+					alert("Hai vinto!");				
+				}
+			}
+			
 			new_set_available=true;	
 		break;
 		case "newset":
@@ -460,19 +488,12 @@ $(function(){
 	} 
     
    	echo_service.onopen = function(){
-      		append("connessione effettuata");
-            /*  setInterval(function(){ 
-            	    var ping = "ping"; 
-            	    echo_service.send("newpartita"); 
-           	},10000);*/
     	} 
     
    	echo_service.onclose = function(){
-      		append("connessione chiusa");
     	} 
     
     	echo_service.onerror = function(){
-      		append("errore nella connessione");
     	}
 
 	// crea CANVAS
@@ -523,61 +544,56 @@ $(function(){
 </head>
 <body>
 
-<h1 onClick="nuova_partita()">Nuova partita</h1>
-
-<h2 id="turno">Turno:</h2>
-
-<h1 onClick="new_set()">New set</h2>
-
 <div id="punteggio">
-<h1>Punteggio</h1>
-	<table>
+	<table id="tabella_punteggio">
 	<tr>
-		<th></th>
+		<th>Punteggio</th>
   		<th>Computer</th>
   		<th>Player</th> 
 	</tr>
 	<tr>
-		<td>Carte</td>
-		<td id="carte_computer">0</td>
-		<td id="carte_player">0</td>
+		<td class="campo_th">Carte</td>
+		<td class="giocatore_computer" id="carte_computer">0</td>
+		<td class="giocatore_player" id="carte_player">0</td>
 	</tr>
 	<tr>		
-		<td>Denari</td>
-		<td id="denari_computer">0</td>
-		<td id="denari_player">0</td>
+		<td class="campo_th">Denari</td>
+		<td class="giocatore_computer" id="denari_computer">0</td>
+		<td class="giocatore_player" id="denari_player">0</td>
 	</tr>
 	<tr>
-		<td>Re bello</td>
-		<td id="re_bello_computer">no</td>
-		<td id="re_bello_player">no</td>
+		<td class="campo_th">Re bello</td>
+		<td class="giocatore_computer" id="re_bello_computer">no</td>
+		<td class="giocatore_player" id="re_bello_player">no</td>
 	</tr>
 	<tr>
-		<td>7 bello</td>
-		<td id="sette_bello_computer">no</td>
-		<td id="sette_bello_player">no</td>
+		<td class="campo_th">7 bello</td>
+		<td class="giocatore_computer" id="sette_bello_computer">no</td>
+		<td class="giocatore_player" id="sette_bello_player">no</td>
 	</tr>
 	<tr>
-		<td>Primiera</td>
-		<td id="primiera_computer">0</td>
-		<td id="primiera_player">0</td>
+		<td class="campo_th">Primiera</td>
+		<td class="giocatore_computer" id="primiera_computer">0</td>
+		<td class="giocatore_player" id="primiera_player">0</td>
 	</tr>
-  		<td>Scope</td>
-		<td id="scope_computer">0</td>
-		<td id="scope_player">0</td>	
+  		<td class="campo_th">Scope</td>
+		<td class="giocatore_computer" id="scope_computer">0</td>
+		<td class="giocatore_player" id="scope_player">0</td>	
 	</tr>
 	</table>
+
+	<ul id="set">
+		<li id="set_giocati">Numero set giocati: 0</li>
+		<li id="set_vinti_computer">Vinti computer: 0</li>
+		<li id="set_vinti_player">Vinti player: 0</li>
+	</ul>
 </div>
-<div>
-<ul id="set">
-<li id="set_giocati">Numero set giocati: 0</li>
-<li id="set_vinti_computer">Vinti computer: 0</li>
-<li id="set_vinti_player">Vinti player: 0</li>
-</ul>
-<ul id="eventi_websocket"></ul>
+<div id="bottoni">
+	<h1 onClick="nuova_partita()" class="bottone" id="nuova_partita">Nuova partita</h1>
+
+	<h1 onClick="new_set()" class="bottone" id="new_set">New set</h2>
+	
+	<h2 id="turno">Turno:</h2>
 </div>
-
-
-
 </body>
 </html>
