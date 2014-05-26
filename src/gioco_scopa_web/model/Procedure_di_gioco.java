@@ -639,6 +639,9 @@ public class Procedure_di_gioco {
 	}
 	
 	private Integer max_value(Stato_nodo stato,Integer alfa,Integer beta,Alfa_beta_nodo padre){
+		Integer new_alfa=new Integer(alfa);
+		Integer new_beta=new Integer(beta);
+		
 		if (stato.terminal_test()){
 			padre.set_minimax(stato.utility());
 			padre.set_alfa(alfa);
@@ -655,23 +658,24 @@ public class Procedure_di_gioco {
 			Integer v=Integer.MIN_VALUE;
 			Integer best_pos=0;
 			for(int i=0;i<azioni.size();i++){
-				Integer max_val=min_value(azioni.get(i),alfa,beta,padre.get_figlio(i));
+				Integer max_val=min_value(azioni.get(i),new_alfa,new_beta,padre.get_figlio(i));
 				if (v<max_val){
 					v=max_val;
 					best_pos=i;
 				}
 				if (v>=beta){
-					padre.set_minimax(v);
-					padre.set_alfa(alfa);
-					padre.set_beta(beta);
+					padre.set_minimax(new Integer(v));
+					padre.set_alfa(new Integer(alfa));
+					padre.set_beta(new Integer(beta));
 					return v;
 				}
 				alfa=max(alfa,v);
+				new_alfa=max(new_alfa,v);
 			}
 			
-			padre.set_minimax(v);
-			padre.set_alfa(alfa);
-			padre.set_beta(beta);
+			padre.set_minimax(new Integer(v));
+			padre.set_alfa(new Integer(alfa));
+			padre.set_beta(new Integer(beta));
 			
 			if (stato.is_root_state()){
 				stato.set_best_action(azioni.get(best_pos));
@@ -681,6 +685,8 @@ public class Procedure_di_gioco {
 	}
 	
 	private Integer min_value(Stato_nodo stato,Integer alfa,Integer beta,Alfa_beta_nodo padre){
+		Integer new_alfa=new Integer(alfa);
+		Integer new_beta=new Integer(beta);
 		if (stato.terminal_test()){
 			padre.set_minimax(stato.utility());
 			padre.set_alfa(alfa);
@@ -696,19 +702,20 @@ public class Procedure_di_gioco {
 			
 			Integer v=Integer.MAX_VALUE;
 			for(int i=0;i<azioni.size();i++){
-				v=min(v,max_value(azioni.get(i),alfa,beta,padre.get_figlio(i)));
+				v=min(v,max_value(azioni.get(i),new_alfa,new_beta,padre.get_figlio(i)));
 				if (v<=alfa){
-					padre.set_minimax(v);
-					padre.set_alfa(alfa);
-					padre.set_beta(beta);
+					padre.set_minimax(new Integer(v));
+					padre.set_alfa(new Integer(alfa));
+					padre.set_beta(new Integer(beta));
 					return v;
 				}
 				beta=min(beta,v);
+				new_beta=min(beta,v);
 			}
-			
-			padre.set_minimax(v);
-			padre.set_alfa(alfa);
-			padre.set_beta(beta);
+
+			padre.set_minimax(new Integer(v));
+			padre.set_alfa(new Integer(alfa));
+			padre.set_beta(new Integer(beta));
 			
 			return v;
 		}
